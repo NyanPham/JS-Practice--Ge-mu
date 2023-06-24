@@ -1,6 +1,7 @@
 import Mouse from "./Mouse.js";
 import Player from "./Player.js";
 import Obstacle from "./Obstacle.js";
+import Camera from "./Camera.js";
 
 class Game {
   constructor(canvas) {
@@ -8,6 +9,7 @@ class Game {
     this.height = canvas.height;
     this.width = canvas.width;
     this.mouse = new Mouse(this.width * 0.5, this.height * 0.5);
+    this.camera = new Camera(this);
 
     this.player = new Player(this);
     this.objectsToRender = [this.player];
@@ -65,6 +67,8 @@ class Game {
       obj.draw(context);
       obj.update();
     });
+
+    this.camera.updateView();
   }
 }
 
