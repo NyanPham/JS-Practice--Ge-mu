@@ -2,6 +2,9 @@ import Mouse from "./Mouse.js";
 import Player from "./Player.js";
 import Obstacle from "./Obstacle.js";
 import Camera from "./Camera.js";
+import PhysicalObject from "./PhysicalObject.js";
+import Tree from "./Resources/Tree.js";
+import EnvironmentManager from "./EnvironmentManager.js";
 
 class Game {
   constructor(canvas) {
@@ -10,6 +13,11 @@ class Game {
     this.width = canvas.width;
     this.mouse = new Mouse(this.width * 0.5, this.height * 0.5);
     this.camera = new Camera(this);
+    this.environmentManager = new EnvironmentManager(this);
+
+    // this.fps = 60;
+    // this.fpsInterval = 1000 / this.fps;
+    // this.fpsTimer = 0;
 
     this.player = new Player(this);
     this.objectsToRender = [this.player];
@@ -31,6 +39,10 @@ class Game {
         this.mouse.setPosition(e.offsetX, e.offsetY);
       }
     });
+
+    this.canvas.addEventListener("click", (e) => {
+      this.environmentManager.checkInteracting(e);
+    });
   }
 
   updateObjectsToRender() {
@@ -38,34 +50,18 @@ class Game {
   }
 
   init() {
-    let attempts = 0;
-    let testObstacle;
-
-    while (this.obstacles.length < this.numOfObstacles && attempts < 300) {
-      testObstacle = new Obstacle(this);
-
-      let overlap = false;
-
-      this.obstacles.forEach((obstacle) => {
-        const { collided } = testObstacle.checkCollision(obstacle, 100);
-
-        if (collided) {
-          overlap = true;
-        }
-      });
-
-      if (!overlap) {
-        this.obstacles.push(testObstacle);
-      }
-    }
+    this.environmentManager.generate("trees");
+    this.environmentManager.generate("rocks");
 
     this.updateObjectsToRender();
   }
 
-  render(context) {
+  render(context, deltaTime) {
+    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     this.objectsToRender.forEach((obj) => {
       obj.draw(context);
-      obj.update();
+      obj.update(deltaTime);
     });
 
     this.camera.updateView();

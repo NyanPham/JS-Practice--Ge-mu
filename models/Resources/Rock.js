@@ -1,8 +1,8 @@
-import PhysicalObject from "./PhysicalObject.js";
+import ResourceObstacle from "./ResourceObstacle.js";
 
-class Obstacle extends PhysicalObject {
-  constructor(game, x = null, y = null, radius = 60) {
-    super(game, x, y, radius);
+class Rock extends ResourceObstacle {
+  constructor(game) {
+    super(game);
   }
 
   draw(context) {
@@ -16,12 +16,11 @@ class Obstacle extends PhysicalObject {
     );
     context.save();
     context.globalAlpha = 0.5;
+    context.fillStyle = "gray";
     context.fill();
     context.restore();
     context.stroke();
   }
-
-  update() {}
 }
 
-export default Obstacle;
+export default Rock;

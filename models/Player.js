@@ -3,7 +3,7 @@ import PhysicalObject from "./PhysicalObject.js";
 class Player extends PhysicalObject {
   constructor(game) {
     super(game, game.width * 0.5, game.height * 0.5, 30);
-    this.speedModifier = 5;
+    this.speedModifier = 15;
   }
 
   draw(context) {
@@ -29,14 +29,17 @@ class Player extends PhysicalObject {
     context.stroke();
   }
 
-  update() {
+  update(deltaTime) {
     const { x, y } = this.game.mouse.getPosition();
 
-    const { distance } = this.getDistance({ collisionX: x, collisionY: y });
+    const { distance, dx, dy } = PhysicalObject.getDistance(this, {
+      collisionX: x,
+      collisionY: y,
+    });
 
     if (distance > this.speedModifier) {
-      this.speedX = this.dx / distance;
-      this.speedY = this.dy / distance;
+      this.speedX = dx / distance;
+      this.speedY = dy / distance;
     } else {
       this.speedX = 0;
       this.speedY = 0;
@@ -44,6 +47,21 @@ class Player extends PhysicalObject {
 
     this.collisionX += this.speedX * this.speedModifier;
     this.collisionY += this.speedY * this.speedModifier;
+
+    this.game.obstacles.forEach((obstacle) => {
+      const { collided, distance, sumOfRadii, dx, dy } =
+        PhysicalObject.checkCollision(this, obstacle, 0);
+      if (collided) {
+        const unit_x = dx / distance;
+        const unit_y = dy / distance;
+
+        this.collisionX = obstacle.collisionX + (sumOfRadii + 1) * unit_x;
+        this.collisionY = obstacle.collisionY + (sumOfRadii + 1) * unit_y;
+        if (this.game.mouse.isWithin(obstacle)) {
+          this.game.mouse.setPosition(this.collisionX, this.collisionY);
+        }
+      }
+    });
   }
 }
 

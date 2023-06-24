@@ -17,9 +17,13 @@ ctx.fill();
 const game = new Game(canvas);
 game.init();
 
-animate();
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  game.render(ctx);
+let lastTime = 0;
+function animate(time) {
+  const delta = time - lastTime;
+
+  game.render(ctx, delta);
+
+  lastTime = time;
   requestAnimationFrame(animate);
 }
+animate(0);

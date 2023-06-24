@@ -5,8 +5,6 @@ class PhysicalObject {
     this.collisionY = y || Math.random() * this.game.height;
     this.collisionRadius = radius;
 
-    this.dx;
-    this.dy;
     this.speedX;
     this.speedY;
   }
@@ -15,14 +13,11 @@ class PhysicalObject {
    *
    * @param {PhysicalObject || { collisionX, collisionY }} otherObject
    */
-  getDistance(otherObject) {
-    const dx = otherObject.collisionX - this.collisionX;
-    const dy = otherObject.collisionY - this.collisionY;
+  static getDistance(physicalObjectA, physicalObjectB) {
+    const dx = physicalObjectB.collisionX - physicalObjectA.collisionX;
+    const dy = physicalObjectB.collisionY - physicalObjectA.collisionY;
 
-    this.dx = dx;
-    this.dy = dy;
-
-    const distance = Math.hypot(this.dy, this.dx);
+    const distance = Math.hypot(dy, dx);
 
     return { distance, dx, dy };
   }
@@ -31,10 +26,14 @@ class PhysicalObject {
    *
    * @param {PhysicalObject} otherObject
    */
-  checkCollision(otherObject, distanceBuffer = 0) {
-    const { distance, dx, dy } = this.getDistance(otherObject);
+  static checkCollision(physicalObjectA, physicalObjectB, distanceBuffer = 0) {
+    const dx = physicalObjectA.collisionX - physicalObjectB.collisionX;
+    const dy = physicalObjectA.collisionY - physicalObjectB.collisionY;
+    const distance = Math.hypot(dy, dx);
     const sumOfRadii =
-      this.collisionRadius + otherObject.collisionRadius + distanceBuffer;
+      physicalObjectA.collisionRadius +
+      physicalObjectB.collisionRadius +
+      distanceBuffer;
 
     return {
       collided: distance < sumOfRadii,

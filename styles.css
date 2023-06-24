@@ -1,12 +1,11 @@
 body {
-    overflow: hidden;
 }
 
 #canvas {
-    --translate-x: 0;
-    --translate-y: 0;
+  --translate-x: 0;
+  --translate-y: 0;
 
-    background: green;
-    transform: translateX(calc(var(--translate-x) * -1px)) translateY(calc(var(--translate-y) * -1px));
-    overflow: hidden;
+  background: rgb(122, 74, 2);
+  transform: translateX(calc(var(--translate-x) * -1px))
+    translateY(calc(var(--translate-y) * -1px));
 }

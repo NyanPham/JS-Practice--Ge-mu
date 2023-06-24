@@ -21,6 +21,15 @@ class Mouse {
   getPosition() {
     return { x: this.x, y: this.y };
   }
+
+  isWithin(obstacle) {
+    return (
+      this.x > obstacle.collisionX - obstacle.collisionRadius &&
+      this.x < obstacle.collisionX + obstacle.collisionRadius &&
+      this.y > obstacle.collisionY - obstacle.collisionRadius &&
+      this.y < obstacle.collisionY + obstacle.collisionRadius
+    );
+  }
 }
 
 export default Mouse;
