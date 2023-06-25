@@ -2,25 +2,51 @@ import Tree from "./Resources/Tree.js";
 import Rock from "./Resources/Rock.js";
 import PhysicalObject from "./PhysicalObject.js";
 import InventoryItem from "./InventoryItem.js";
+import BerryBush from "./Resources/BerryBush.js";
 
 class EnvironmentManager {
   constructor(game) {
     this.game = game;
-    this.numOfTrees = 15;
-    this.numOfRocks = 15;
+    this.numOfTrees = 20;
+    this.numOfRocks = 20;
+    this.numOfBerryBushses = 30;
     this.trees = [];
     this.rocks = [];
+    this.berryBushes = [];
   }
 
   generate(type = "trees") {
     let attempts = 0;
     let testObject;
+    let currentArray, maxNum;
 
-    const currentArray = type === "trees" ? this.trees : this.rocks;
-    const maxNum = type === "trees" ? this.numOfTrees : this.numOfRocks;
+    switch (type) {
+      case "trees":
+        currentArray = this.trees;
+        maxNum = this.numOfTrees;
+        break;
+      case "rocks":
+        currentArray = this.rocks;
+        maxNum = this.numOfRocks;
+        break;
+      case "berry":
+        currentArray = this.berryBushes;
+        maxNum = this.numOfBerryBushses;
+        break;
+      default:
+        currentArray = this.trees;
+        maxNum = this.numOfTrees;
+    }
 
     while (currentArray.length < maxNum && attempts < 150) {
-      testObject = type === "trees" ? new Tree(this.game) : new Rock(this.game);
+      if (type === "trees") {
+        testObject = new Tree(this.game);
+      } else if (type === "rocks") {
+        testObject = new Rock(this.game);
+      } else {
+        testObject = new BerryBush(this.game);
+      }
+
       let overlap = false;
 
       this.game.obstacles.forEach((obstacle) => {
@@ -37,8 +63,8 @@ class EnvironmentManager {
   }
 
   checkInteracting(e) {
-    let item = [...this.trees, ...this.rocks].find((item) =>
-      this.game.mouse.isWithin(item)
+    let item = [...this.trees, ...this.rocks, ...this.berryBushes].find(
+      (item) => this.game.mouse.isWithin(item)
     );
 
     if (item == null) return null;

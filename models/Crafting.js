@@ -24,6 +24,7 @@ class Crafting {
     this.craftingItemsMap = {
       axe: {
         name: "Axe",
+        type: "tool",
         durability: 50,
         materials: {
           wood: 3,
@@ -31,6 +32,7 @@ class Crafting {
       },
       pickaxe: {
         name: "Pickaxe",
+        type: "tool",
         durability: 35,
         materials: {
           wood: 30,
@@ -38,6 +40,7 @@ class Crafting {
       },
       firecamp: {
         name: "Firecamp",
+        type: "placeable",
         constantDropDurability: true,
         durability: 1000,
         materials: {
@@ -149,7 +152,7 @@ class Crafting {
     if (shouldCreateItem) {
       this.player.inventory.addToInventory(
         craftingItem.name,
-        "tool",
+        craftingItem.type,
         1,
         craftingItem.durability
       );

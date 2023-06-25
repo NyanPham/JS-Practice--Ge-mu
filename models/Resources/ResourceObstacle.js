@@ -9,7 +9,8 @@ class ResourceObstacle extends Obstacle {
     name = "resource",
     resevoir = null,
     resourceName = "item",
-    requiredEquipments = ["barehand"]
+    requiredEquipments = ["barehand"],
+    consumable = false
   ) {
     super(game, x, y, radius);
 
@@ -18,6 +19,7 @@ class ResourceObstacle extends Obstacle {
     this.resourceName = resourceName;
     this.type = "resource";
     this.requiredEquipments = requiredEquipments;
+    this.consumable = consumable;
 
     this.exploitRateMap = {};
   }

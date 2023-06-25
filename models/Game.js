@@ -58,6 +58,7 @@ class Game {
   init() {
     this.environmentManager.generate("trees");
     this.environmentManager.generate("rocks");
+    this.environmentManager.generate("berry");
 
     this.updateObjectsToRender();
   }

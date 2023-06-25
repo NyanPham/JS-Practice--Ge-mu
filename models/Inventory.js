@@ -44,8 +44,6 @@ class Inventory {
       this.drawSlot(i);
     }
 
-    this.drawEquippedHand();
-
     this.inventoryCanvas.addEventListener(
       "click",
       this.handleSelectItem.bind(this)
@@ -56,6 +54,8 @@ class Inventory {
       this.selectedSlotIndex = null;
       this.updateCanvasView();
     });
+
+    this.drawEquippedHand();
   }
 
   drawSlot(index) {
@@ -99,7 +99,7 @@ class Inventory {
 
     this.equipContext.beginPath();
     this.equipContext.fillText(
-      this.player.rightHand,
+      this.player.rightHand || "barehand",
       this.slotWidth * 0.5,
       this.slotHeight * 0.5
     );
@@ -113,12 +113,18 @@ class Inventory {
     const index = Math.floor(x / this.slotWidth);
     const selectedItem = this.inventorySlots[index];
 
-    if (selectedItem !== "empty" && selectedItem.type === "tool") {
+    if (selectedItem === "empty") return false;
+
+    if (selectedItem.type === "tool") {
       this.selectedSlotIndex = index;
 
       this.player.equip(selectedItem);
 
       this.updateCanvasView();
+    }
+
+    if (selectedItem.type === "consumable") {
+      console.log("should eat");
     }
   }
 
