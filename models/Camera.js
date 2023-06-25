@@ -13,6 +13,14 @@ class Camera {
       "--translate-y",
       collisionY - window.innerHeight / 2
     );
+
+    if (window.scrollX > 0) {
+      window.scrollTo({ left: 0 });
+    }
+
+    if (window.scrollY > 0) {
+      window.scrollTo({ top: 0 });
+    }
   }
 }
 

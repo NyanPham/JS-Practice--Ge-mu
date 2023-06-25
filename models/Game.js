@@ -5,6 +5,7 @@ import Camera from "./Camera.js";
 import PhysicalObject from "./PhysicalObject.js";
 import Tree from "./Resources/Tree.js";
 import EnvironmentManager from "./EnvironmentManager.js";
+import ResourceObstacle from "./Resources/ResourceObstacle.js";
 
 class Game {
   constructor(canvas) {
@@ -40,13 +41,18 @@ class Game {
       }
     });
 
-    this.canvas.addEventListener("click", (e) => {
-      this.environmentManager.checkInteracting(e);
-    });
+    this.canvas.addEventListener("click", this.handleResourceClick.bind(this));
   }
 
   updateObjectsToRender() {
     this.objectsToRender = [this.player, ...this.obstacles];
+  }
+
+  handleResourceClick(e) {
+    const item = this.environmentManager.checkInteracting(e);
+    if (item != null) {
+      this.player.collect(item);
+    }
   }
 
   init() {

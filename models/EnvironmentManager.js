@@ -1,6 +1,7 @@
 import Tree from "./Resources/Tree.js";
 import Rock from "./Resources/Rock.js";
 import PhysicalObject from "./PhysicalObject.js";
+import InventoryItem from "./InventoryItem.js";
 
 class EnvironmentManager {
   constructor(game) {
@@ -41,10 +42,10 @@ class EnvironmentManager {
     );
 
     if (item == null) return null;
+    if (PhysicalObject.getDistance(item, this.game.player).distance > 120)
+      return null;
 
-    if (PhysicalObject.getDistance(item, this.game.player).distance < 120) {
-      console.log(item);
-    }
+    return item;
   }
 }
 

@@ -6,16 +6,53 @@ class ResourceObstacle extends Obstacle {
     x = null,
     y = null,
     radius = 60,
-    name = "item",
-    resevoir = null
+    name = "resource",
+    resevoir = null,
+    resourceName = "item",
+    requiredEquipments = ["barehand"]
   ) {
     super(game, x, y, radius);
 
     this.resevoir = resevoir || Math.floor(Math.random() * 25);
     this.name = name;
+    this.resourceName = resourceName;
+    this.type = "resource";
+    this.requiredEquipments = requiredEquipments;
+
+    this.exploitRateMap = {};
   }
 
-  
+  getCollected(rightHand) {
+    if (!this.requiredEquipments.includes(rightHand)) {
+      alert(
+        `Cannot collect ${this.resourceName} from ${this.name} with ${rightHand}`
+      );
+      return;
+    }
+
+    if (this.resevoir === 0) {
+      alert("The resource needs time to recover");
+      return;
+    }
+
+    if (Object.keys(this.exploitRateMap).length === 0) {
+      this.requiredEquipments.forEach((equipName, index) => {
+        this.exploitRateMap[equipName] = index + 1;
+      });
+    }
+
+    let quantity = this.exploitRateMap[rightHand];
+
+    let validQuantityToExploit =
+      quantity < this.resevoir ? quantity : this.resevoir;
+
+    this.resevoir -= validQuantityToExploit;
+    return validQuantityToExploit;
+  }
+
+  increment(quantity) {
+    this.resevoir += quantity;
+  }
 }
 
 export default ResourceObstacle;

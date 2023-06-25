@@ -3,6 +3,14 @@ import ResourceObstacle from "./ResourceObstacle.js";
 class Tree extends ResourceObstacle {
   constructor(game) {
     super(game);
+    this.name = "tree";
+    this.resourceName = "wood";
+    this.requiredEquipments = ["barehand", "axe"];
+
+    this.exploitRateMap = {
+      barehand: 1,
+      axe: 3,
+    };
   }
 
   draw(context) {

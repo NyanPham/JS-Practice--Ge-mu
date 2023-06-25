@@ -1,4 +1,11 @@
+*, *::after, *::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
+  overflow: hidden;
 }
 
 #canvas {
@@ -8,4 +15,86 @@ body {
   background: rgb(122, 74, 2);
   transform: translateX(calc(var(--translate-x) * -1px))
     translateY(calc(var(--translate-y) * -1px));
+}
+
+#inventory,
+#crafting,
+#equipped {
+  position: fixed;
+  bottom: 5rem;
+  background: transparent;
+} 
+
+#inventory {
+  left: 50%;
+  transform: translate(-50%);
+}
+  
+#equipped {
+  right: 3rem;
+  cursor: pointer;
+}
+
+#crafting {
+  left: 3rem;
+  cursor: pointer;
+}
+
+.crafting-items {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+}
+
+.crafting-items.show {
+  display: block;
+}
+
+.crafting-item-list {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 40vw;
+  height: 40vh;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid black;
+  border-radius: 10px;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+.crafting-item {
+  list-style-type: none;
+  text-align: center;
+  padding: 1.2rem;
+  font-size: 24px;
+  cursor: pointer;
+
+  transition: background 250ms ease, color 250ms ease;
+}
+
+.crafting-item:hover {
+  background: green;
+  color: white;
+}
+
+.close-crafting {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  font-size: 2rem;
+  width: 3rem;
+  height: 3rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;  
 }

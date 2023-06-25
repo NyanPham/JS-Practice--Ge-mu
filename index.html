@@ -7,7 +7,21 @@
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="script.js"></script>
 </head>
-<body>  
+<body>      
     <canvas id="canvas"></canvas>
-</body>
+    <canvas id="inventory"></canvas>
+    <canvas id="crafting"></canvas> 
+    <canvas id="equipped"></canvas>
+    
+    <div class="crafting-items" id="crafting-list-container">
+        <div class="close-crafting" data-close-crafting-btn>&times;</div>
+        <div class="crafting-item-list" data-craftable-list>
+            <!-- <div class="crafting-item" data-item="axe">Axe</div>
+            <div class="crafting-item" data-item="pickaxe">Pickaxe</div>
+            <div class="crafting-item" data-item="campfire">Campfire</div> -->
+        </div>   
+    </div>
+
+    <img src="./assets/chainsaw.png" alt="Chainsaw" id="chainsaw">
+</body> 
 </html>
