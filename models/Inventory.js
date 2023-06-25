@@ -9,8 +9,10 @@ class Inventory {
     this.slotWidth = 100;
     this.slotHeight = 100;
 
+    this.slotsNum = 7;
+
     this.inventoryCanvas = document.getElementById("inventory");
-    this.inventoryCanvas.width = 7 * this.slotWidth;
+    this.inventoryCanvas.width = this.slotsNum * this.slotWidth;
     this.inventoryCanvas.height = this.slotHeight;
 
     this.inventoryContext = this.inventoryCanvas.getContext("2d");
@@ -20,7 +22,9 @@ class Inventory {
     this.inventoryContext.font = "28px serif";
     this.inventoryContext.textAlign = "center";
 
-    this.inventorySlots = Array.from({ length: 7 }).map(() => "empty");
+    this.inventorySlots = Array.from({ length: this.slotsNum }).map(
+      () => "empty"
+    );
     this.inventoryDisplay = new Array(this.inventorySlots.length);
 
     this.equipCanvas = document.getElementById("equipped");
@@ -36,7 +40,12 @@ class Inventory {
 
     this.selectedSlotIndex = null;
 
+    this.isDragging = false;
+    this.dragStartIndex = null;
+
     this.init();
+
+    this.addEventListeners();
   }
 
   init() {
@@ -44,9 +53,33 @@ class Inventory {
       this.drawSlot(i);
     }
 
+    this.drawEquippedHand();
+  }
+
+  addEventListeners() {
     this.inventoryCanvas.addEventListener(
       "click",
       this.handleSelectItem.bind(this)
+    );
+
+    this.inventoryCanvas.addEventListener(
+      "contextmenu",
+      this.handleConsumeItem.bind(this)
+    );
+
+    this.inventoryCanvas.addEventListener(
+      "mousedown",
+      this.handleMouseDown.bind(this)
+    );
+
+    this.inventoryCanvas.addEventListener(
+      "mouseup",
+      this.handleMouseUp.bind(this)
+    );
+
+    this.inventoryCanvas.addEventListener(
+      "mousemove",
+      this.handleDrag.bind(this)
     );
 
     this.equipCanvas.addEventListener("click", () => {
@@ -54,8 +87,6 @@ class Inventory {
       this.selectedSlotIndex = null;
       this.updateCanvasView();
     });
-
-    this.drawEquippedHand();
   }
 
   drawSlot(index) {
@@ -105,15 +136,51 @@ class Inventory {
     );
   }
 
-  handleSelectItem(e) {
-    this.getItemByCoordinates(e.offsetX, e.offsetY);
+  updateCanvasView() {
+    this.inventorySlots.forEach((item, index) => {
+      if (item === "empty") return;
+
+      this.drawSlot(index);
+
+      this.inventoryContext.beginPath();
+      this.inventoryContext.fillText(
+        item.name,
+        index * this.slotWidth + this.slotWidth * 0.5,
+        this.slotHeight * 0.5 - 5
+      );
+      this.inventoryContext.fillText(
+        item.quantity,
+        index * this.slotWidth + this.slotWidth * 0.5,
+        this.slotHeight * 0.5 + 30
+      );
+    });
+
+    this.drawEquippedHand();
   }
 
   getItemByCoordinates(x, y) {
     const index = Math.floor(x / this.slotWidth);
     const selectedItem = this.inventorySlots[index];
 
-    if (selectedItem === "empty") return false;
+    if (selectedItem === "empty") return { selectedItem: null, index };
+
+    return { selectedItem, index };
+  }
+
+  getSlotByItemNameAndType(itemName, itemType) {
+    return this.inventorySlots.find(
+      (inventoryItem) =>
+        inventoryItem?.name === itemName && inventoryItem?.type === itemType
+    );
+  }
+
+  handleSelectItem(e) {
+    const { selectedItem, index } = this.getItemByCoordinates(
+      e.offsetX,
+      e.offsetY
+    );
+
+    if (selectedItem == null) return;
 
     if (selectedItem.type === "tool") {
       this.selectedSlotIndex = index;
@@ -122,17 +189,56 @@ class Inventory {
 
       this.updateCanvasView();
     }
+  }
+
+  handleConsumeItem(e) {
+    e.preventDefault();
+
+    const { selectedItem } = this.getItemByCoordinates(e.offsetX, e.offsetY);
+    if (selectedItem == null) return;
 
     if (selectedItem.type === "consumable") {
       console.log("should eat");
     }
   }
 
-  getSlotByItemNameAndType(itemName, itemType) {
-    return this.inventorySlots.find(
-      (inventoryItem) =>
-        inventoryItem?.name === itemName && inventoryItem?.type === itemType
-    );
+  handleDrag(e) {
+    if (this.isDragging) {
+    }
+  }
+
+  handleMouseDown(e) {
+    this.isDragging = true;
+    this.dragStartIndex = Math.floor(e.offsetX / this.slotWidth);
+  }
+
+  handleMouseUp(e) {
+    this.isDragging = false;
+
+    const index = Math.floor(e.offsetX / this.slotWidth);
+
+    if (
+      this.dragStartIndex != null &&
+      this.inventorySlots[this.dragStartIndex] !== "empty" &&
+      index !== this.dragStartIndex
+    ) {
+      const temp = this.inventorySlots[index];
+      this.inventorySlots[index] = this.inventorySlots[this.dragStartIndex];
+      this.inventorySlots[this.dragStartIndex] = temp;
+
+      if (this.selectedSlotIndex === this.dragStartIndex) {
+        this.selectedSlotIndex = index;
+      } else if (this.selectedSlotIndex === index) {
+        this.selectedSlotIndex = this.dragStartIndex;
+      }
+
+      this.drawSlot(this.dragStartIndex);
+      this.drawSlot(index);
+
+      this.updateCanvasView();
+
+      this.dragStartIndex = null;
+    }
   }
 
   /**
@@ -180,28 +286,6 @@ class Inventory {
 
     this.updateCanvasView();
     return true;
-  }
-
-  updateCanvasView() {
-    this.inventorySlots.forEach((item, index) => {
-      if (item === "empty") return;
-
-      this.drawSlot(index);
-
-      this.inventoryContext.beginPath();
-      this.inventoryContext.fillText(
-        item.name,
-        index * this.slotWidth + this.slotWidth * 0.5,
-        this.slotHeight * 0.5 - 5
-      );
-      this.inventoryContext.fillText(
-        item.quantity,
-        index * this.slotWidth + this.slotWidth * 0.5,
-        this.slotHeight * 0.5 + 30
-      );
-    });
-
-    this.drawEquippedHand();
   }
 
   draw(context) {}
