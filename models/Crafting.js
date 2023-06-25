@@ -118,8 +118,6 @@ class Crafting {
         text: item[1].name,
       });
 
-      console.log(craftDiv);
-
       this.craftbleList.appendChild(craftDiv);
     });
 

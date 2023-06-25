@@ -22,7 +22,10 @@ class Player extends PhysicalObject {
    */
   collect(resourceItem) {
     if (resourceItem instanceof ResourceObstacle) {
-      const extracted = resourceItem.getCollected(this.rightHand);
+      const extracted = resourceItem.getCollected(
+        this.rightHand,
+        this.getEquippedTool()
+      );
       if (extracted == null) return false;
 
       if (
@@ -51,6 +54,10 @@ class Player extends PhysicalObject {
 
   removeTool() {
     this.rightHand = "barehand";
+  }
+
+  getEquippedTool() {
+    return this.inventory.getEquippedTool();
   }
 
   draw(context) {

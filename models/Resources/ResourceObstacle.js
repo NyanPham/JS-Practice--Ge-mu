@@ -24,7 +24,7 @@ class ResourceObstacle extends Obstacle {
     this.exploitRateMap = {};
   }
 
-  getCollected(rightHand) {
+  getCollected(rightHand, equippedTool) {
     if (!this.requiredEquipments.includes(rightHand)) {
       alert(
         `Cannot collect ${this.resourceName} from ${this.name} with ${rightHand}`
@@ -49,6 +49,7 @@ class ResourceObstacle extends Obstacle {
       quantity < this.resevoir ? quantity : this.resevoir;
 
     this.resevoir -= validQuantityToExploit;
+    equippedTool.reduceDurability(0);
     return validQuantityToExploit;
   }
 
