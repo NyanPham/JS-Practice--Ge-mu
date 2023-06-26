@@ -27,6 +27,8 @@ class Player extends PhysicalObject {
         this.getEquippedTool()
       );
       if (extracted == null) return false;
+      const toolIdx = this.getEquippedToolIndex();
+      if (toolIdx != null) this.inventory.drawSlot(toolIdx);
 
       if (
         !this.inventory.addToInventory(
@@ -58,6 +60,10 @@ class Player extends PhysicalObject {
 
   getEquippedTool() {
     return this.inventory.getEquippedTool();
+  }
+
+  getEquippedToolIndex() {
+    return this.inventory.equippedSlotIndex;
   }
 
   draw(context) {

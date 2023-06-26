@@ -6,12 +6,19 @@ class Tool extends InventoryItem {
 
     this.initialDurability = durability;
     this.durability = durability;
+
+    this.markedForDeletion = false;
   }
 
   increment() {}
 
-  loseDurability(step = 1) {
+  reduceDurability(step = 1) {
     this.durability -= step;
+
+    if (this.durability <= 0) {
+      this.markedForDeletion = true;
+      document.dispatchEvent(new CustomEvent("inventory-item-removal"));
+    }
   }
 }
 

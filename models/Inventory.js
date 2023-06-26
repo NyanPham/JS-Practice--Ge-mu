@@ -10,6 +10,7 @@ class Inventory {
     this.slotHeight = 100;
 
     this.slotsNum = 7;
+    this.emptyConst = "empty";
 
     this.inventoryCanvas = document.getElementById("inventory");
     this.inventoryCanvas.width = (this.slotsNum + 1) * this.slotWidth;
@@ -23,7 +24,7 @@ class Inventory {
     this.inventoryContext.textAlign = "center";
 
     this.inventorySlots = Array.from({ length: this.slotsNum }).map(
-      () => "empty"
+      () => this.emptyConst
     );
     this.inventoryDisplay = new Array(this.inventorySlots.length);
     this.discardImage = document.getElementById("discard-image");
@@ -91,6 +92,11 @@ class Inventory {
       this.equippedSlotIndex = null;
       this.updateCanvasView();
     });
+
+    document.addEventListener(
+      "inventory-item-removal",
+      this.removeMarkedItems.bind(this)
+    );
   }
 
   drawSlot(index) {
@@ -117,6 +123,9 @@ class Inventory {
     this.inventoryContext.fill();
     this.inventoryContext.restore();
     this.inventoryContext.stroke();
+    if (this.inventorySlots[index].type === "tool") {
+      this.drawDurability(index);
+    }
   }
 
   drawDiscardSlot() {
@@ -168,9 +177,28 @@ class Inventory {
     );
   }
 
+  drawDurability(index) {
+    const dura =
+      this.inventorySlots[index].durability /
+      this.inventorySlots[index].initialDurability;
+
+    this.inventoryContext.beginPath();
+    // this.inventoryContext.moveTo(index * this.slotWidth, this.slotHeight - 3);
+    this.inventoryContext.save();
+    this.inventoryContext.rect(
+      index * this.slotWidth + 1,
+      this.slotHeight - 5,
+      dura * this.slotWidth - 4,
+      5
+    );
+    this.inventoryContext.fillStyle = "blue";
+    this.inventoryContext.fill();
+    this.inventoryContext.restore();
+  }
+
   updateCanvasView() {
     this.inventorySlots.forEach((item, index) => {
-      if (item === "empty") return;
+      if (item === this.emptyConst) return;
 
       this.drawSlot(index);
 
@@ -194,7 +222,7 @@ class Inventory {
     const index = Math.floor(x / this.slotWidth);
     const selectedItem = this.inventorySlots[index];
 
-    if (selectedItem === "empty") return { selectedItem: null, index };
+    if (selectedItem === this.emptyConst) return { selectedItem: null, index };
 
     return { selectedItem, index };
   }
@@ -257,7 +285,7 @@ class Inventory {
     if (
       this.dragStartIndex != null &&
       this.dragStartIndex !== this.slotsNum &&
-      this.inventorySlots[this.dragStartIndex] !== "empty" &&
+      this.inventorySlots[this.dragStartIndex] !== this.emptyConst &&
       index !== this.dragStartIndex
     ) {
       this.swapItem(index);
@@ -270,6 +298,23 @@ class Inventory {
     if (this.equippedSlotIndex == null) return null;
 
     return this.inventorySlots[this.equippedSlotIndex];
+  }
+
+  removeMarkedItems() {
+    for (let i = 0; i < this.inventorySlots.length; i++) {
+      if (
+        this.inventorySlots[i].type === "tool" &&
+        this.inventorySlots[i].markedForDeletion
+      ) {
+        this.inventorySlots[i] = this.emptyConst;
+        if (i === this.equippedSlotIndex) {
+          this.player.removeTool();
+          this.equippedSlotIndex = null;
+        }
+
+        this.drawSlot(i);
+      }
+    }
   }
 
   /**
@@ -288,7 +333,9 @@ class Inventory {
         itemType === "tool"
           ? new Tool(itemName, itemType, durability)
           : new InventoryItem(itemName, itemType, 0);
-      emptyIdx = this.inventorySlots.findIndex((slot) => slot == "empty");
+      emptyIdx = this.inventorySlots.findIndex(
+        (slot) => slot == this.emptyConst
+      );
       if (emptyIdx === -1) return false;
 
       this.inventorySlots[emptyIdx] = slot;
@@ -310,7 +357,7 @@ class Inventory {
 
     if (slot.quantity === 0) {
       const idx = this.inventorySlots.indexOf(slot);
-      this.inventorySlots[idx] = "empty";
+      this.inventorySlots[idx] = this.emptyConst;
 
       this.drawSlot(idx);
     }
@@ -340,7 +387,7 @@ class Inventory {
     if (
       this.dragStartIndex != null &&
       this.dragStartIndex !== this.slotsNum &&
-      this.inventorySlots[this.dragStartIndex] !== "empty"
+      this.inventorySlots[this.dragStartIndex] !== this.emptyConst
     ) {
       if (
         window.confirm(
@@ -349,7 +396,7 @@ class Inventory {
           } away?`
         )
       ) {
-        this.inventorySlots[this.dragStartIndex] = "empty";
+        this.inventorySlots[this.dragStartIndex] = this.emptyConst;
         if (this.dragStartIndex === this.equippedSlotIndex) {
           this.player.removeTool();
           this.equippedSlotIndex = null;

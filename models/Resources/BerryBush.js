@@ -8,6 +8,8 @@ class BerryBush extends ResourceObstacle {
     this.requiredEquipments = ["barehand"];
     this.collisionRadius = 30;
     this.resevoir = Math.floor(Math.random() * (5 - 3)) + 3;
+    this.maxContainer = this.resevoir;
+
     this.consumable = true;
     this.type = "consumable";
 

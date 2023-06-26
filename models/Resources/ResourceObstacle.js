@@ -13,8 +13,12 @@ class ResourceObstacle extends Obstacle {
     consumable = false
   ) {
     super(game, x, y, radius);
+    this.refillInterval = null;
+    this.refillTime = 7000;
 
     this.resevoir = resevoir || Math.floor(Math.random() * 25);
+    this.maxContainer = this.resevoir;
+
     this.name = name;
     this.resourceName = resourceName;
     this.type = "resource";
@@ -24,7 +28,7 @@ class ResourceObstacle extends Obstacle {
     this.exploitRateMap = {};
   }
 
-  getCollected(rightHand, equippedTool) {
+  getCollected(rightHand, equippedTool = null) {
     if (!this.requiredEquipments.includes(rightHand)) {
       alert(
         `Cannot collect ${this.resourceName} from ${this.name} with ${rightHand}`
@@ -49,12 +53,33 @@ class ResourceObstacle extends Obstacle {
       quantity < this.resevoir ? quantity : this.resevoir;
 
     this.resevoir -= validQuantityToExploit;
-    equippedTool.reduceDurability(0);
+
+    if (this.refillInterval !== null) {
+      clearInterval(this.refillInterval);
+    }
+
+    this.refillInterval = setInterval(this.refill.bind(this), this.refillTime);
+
+    if (equippedTool != null) equippedTool.reduceDurability(1);
+
     return validQuantityToExploit;
   }
 
   increment(quantity) {
     this.resevoir += quantity;
+  }
+
+  refill() {
+    console.log(this.resevoir, this.maxContainer);
+
+    if (this.resevoir < this.maxContainer) {
+      this.resevoir++;
+    }
+
+    if (this.resevoir === this.maxContainer) {
+      window.clearInterval(this.refillInterval);
+      this.refillInterval = null;
+    }
   }
 }
 

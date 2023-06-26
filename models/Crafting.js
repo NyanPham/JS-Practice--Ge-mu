@@ -25,7 +25,7 @@ class Crafting {
       axe: {
         name: "Axe",
         type: "tool",
-        durability: 50,
+        durability: 10,
         materials: {
           wood: 3,
         },
@@ -33,7 +33,7 @@ class Crafting {
       pickaxe: {
         name: "Pickaxe",
         type: "tool",
-        durability: 35,
+        durability: 15,
         materials: {
           wood: 30,
         },
@@ -42,7 +42,7 @@ class Crafting {
         name: "Firecamp",
         type: "placeable",
         constantDropDurability: true,
-        durability: 1000,
+        durability: 60 * 1000,
         materials: {
           wood: 50,
         },
