@@ -14,15 +14,33 @@ body {
   --translate-x: 0;
   --translate-y: 0;
 
+  position: relative;
   background: rgb(122, 74, 2);
   transform: translateX(calc(var(--translate-x) * -1px))
     translateY(calc(var(--translate-y) * -1px));
+}
+  
+.night-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+
+.night-overlay.fall {
+  opacity: 1;
 }
 
 #inventory,
 #crafting,
 #equipped,
-#player-stats {
+#player-stats,
+#day-night-cycle {
   position: fixed;
   bottom: 5rem;
   background: transparent;
@@ -31,6 +49,12 @@ body {
 #player-stats {
   top: 5rem;
   right: 3rem;
+}
+
+#day-night-cycle {
+  top: 3rem;
+  left: 3rem;
+  bottom: unset;
 }
 
 #inventory {
