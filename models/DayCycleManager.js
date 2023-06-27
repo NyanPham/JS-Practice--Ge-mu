@@ -4,8 +4,8 @@ class DayCycleManager {
 
     this.nightOverlay = document.querySelector("[data-night-overlay]");
 
-    this.dayInterval = 0.5 * 60 * 1000;
-    this.nightInterval = 0.3 * 60 * 1000;
+    this.dayInterval = 4.5 * 60 * 1000;
+    this.nightInterval = 2.5 * 60 * 1000;
 
     this.dayNightCycleTimer = 0;
     this.dayCount = 1;

@@ -7,6 +7,7 @@ import Tree from "./Resources/Tree.js";
 import EnvironmentManager from "./EnvironmentManager.js";
 import ResourceObstacle from "./Resources/ResourceObstacle.js";
 import DayCycleManager from "./DayCycleManager.js";
+import PlayerObject from "./Resources/PlayerObject.js";
 
 class Game {
   constructor(canvas) {
@@ -52,7 +53,7 @@ class Game {
 
     this.canvas.addEventListener(
       "mousedown",
-      this.handleResourceClick.bind(this)
+      this.handleActionClick.bind(this)
     );
 
     this.canvas.addEventListener(
@@ -65,7 +66,7 @@ class Game {
     this.objectsToRender = [this.player, ...this.obstacles];
   }
 
-  handleResourceClick(e) {
+  handleActionClick(e) {
     if (e.button !== 0) return;
 
     const item = this.environmentManager.checkInteracting(e);
@@ -79,8 +80,27 @@ class Game {
 
     if (this.player.isPlacingObject) {
       // create object at mouse position;
-      this.mouse.disableMouseCursor();
-      this.player.isPlacingObject = false;
+      const item = this.player.getPlacingItem();
+      const itemData = this.player.getItemInfoAfterCrafting(item.name);
+
+      const playerObject = new PlayerObject(
+        this,
+        this.mouse.x,
+        this.mouse.y,
+        itemData.collisionRadius,
+        itemData.name,
+        itemData.type,
+        itemData.durability,
+        itemData.constantDropDurability
+      );
+
+      const isPlaced =
+        this.environmentManager.addUserObjectToWorld(playerObject);
+
+      if (isPlaced) {
+        this.player.placeItem();
+        this.mouse.disableMouseCursor();
+      }
     }
   }
 
@@ -89,6 +109,7 @@ class Game {
 
     if (this.mouse.useMouseCursor) {
       this.mouse.disableMouseCursor();
+      this.player.cancelPlacingItem();
     }
   }
 

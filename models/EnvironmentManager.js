@@ -13,6 +13,7 @@ class EnvironmentManager {
     this.trees = [];
     this.rocks = [];
     this.berryBushes = [];
+    this.userObjects = [];
   }
 
   generate(type = "trees") {
@@ -72,6 +73,25 @@ class EnvironmentManager {
       return null;
 
     return item;
+  }
+
+  addUserObjectToWorld(userObject) {
+    let overlap = false;
+
+    this.game.obstacles.forEach((obstacle) => {
+      if (PhysicalObject.checkCollision(userObject, obstacle).collided) {
+        overlap = true;
+      }
+    });
+
+    if (!overlap) {
+      this.userObjects.push(userObject);
+      this.game.obstacles.push(userObject);
+      this.game.updateObjectsToRender();
+      return true;
+    }
+
+    return false;
   }
 }
 

@@ -255,7 +255,8 @@ class Inventory {
         selectedItem.placeImage.src,
         selectedItem.collisionRadius
       );
-      this.player.isPlacingObject = true;
+      this.player.startPlacingItem();
+      this.objectPlacingIndex = index;
     }
   }
 
@@ -320,6 +321,16 @@ class Inventory {
     if (this.equippedSlotIndex == null) return null;
 
     return this.inventorySlots[this.equippedSlotIndex];
+  }
+
+  getPlacingItem() {
+    if (this.objectPlacingIndex == null) return null;
+
+    return this.inventorySlots[this.objectPlacingIndex];
+  }
+
+  cancelPlacingItem() {
+    this.objectPlacingIndex = null;
   }
 
   removeMarkedItems() {

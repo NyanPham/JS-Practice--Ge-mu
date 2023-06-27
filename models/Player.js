@@ -62,6 +62,12 @@ class Player extends PhysicalObject {
     this.stats.addStat("sanity", sanity);
   }
 
+  getItemInfoAfterCrafting(itemName) {
+    return Object.values(this.crafting.craftingItemsMap).find(
+      (data) => data.name === itemName
+    );
+  }
+
   /**
    *
    * @param {Tool} tool
@@ -93,6 +99,26 @@ class Player extends PhysicalObject {
 
   getHealth() {
     return this.stats.health;
+  }
+
+  startPlacingItem() {
+    this.isPlacingObject = true;
+  }
+
+  getPlacingItem() {
+    return this.inventory.getPlacingItem();
+  }
+
+  placeItem() {
+    this.isPlacingObject = false;
+    const index = this.inventory.objectPlacingIndex;
+    this.inventory.objectPlacingIndex = null;
+    this.inventory.emptyOutSlot(index);
+  }
+
+  cancelPlacingItem() {
+    this.isPlacingObject = false;
+    this.inventory.cancelPlacingItem();
   }
 
   draw(context) {

@@ -5,6 +5,7 @@ class Placeable extends InventoryItem {
     super(name, type, quantity);
 
     this.collisionRadius = collisionRadius;
+
     this.placeImage = document.querySelector(`img[data-image="${placeImage}"]`);
 
     if (this.placeImage == null) {

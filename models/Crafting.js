@@ -27,7 +27,7 @@ class Crafting {
         type: "tool",
         durability: 10,
         materials: {
-          wood: 12,
+          wood: 3,
         },
       },
       pickaxe: {
@@ -46,7 +46,7 @@ class Crafting {
         constantDropDurability: true,
         durability: 60 * 1000,
         materials: {
-          wood: 3,
+          wood: 5,
         },
       },
     };

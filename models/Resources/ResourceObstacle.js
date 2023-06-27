@@ -73,8 +73,6 @@ class ResourceObstacle extends Obstacle {
   }
 
   refill() {
-    console.log(this.resevoir, this.maxContainer);
-
     if (this.resevoir < this.maxContainer) {
       this.resevoir++;
     }
