@@ -1,5 +1,9 @@
 import Obstacle from "../Obstacle.js";
 
+export const FOOD_MAP = new Map([
+  ["berry", { health: 1, hunger: 7, sanity: 0 }],
+]);
+
 class ResourceObstacle extends Obstacle {
   constructor(
     game,
@@ -16,14 +20,13 @@ class ResourceObstacle extends Obstacle {
     this.refillInterval = null;
     this.refillTime = 7000;
 
-    this.resevoir = resevoir || Math.floor(Math.random() * 25);
+    this.resevoir = resevoir || Math.floor(Math.random() * 25) + 7;
     this.maxContainer = this.resevoir;
 
     this.name = name;
     this.resourceName = resourceName;
     this.type = "resource";
     this.requiredEquipments = requiredEquipments;
-    this.consumable = consumable;
 
     this.exploitRateMap = {};
   }

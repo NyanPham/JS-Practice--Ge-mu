@@ -253,11 +253,19 @@ class Inventory {
   handleConsumeItem(e) {
     e.preventDefault();
 
-    const { selectedItem } = this.getItemByCoordinates(e.offsetX, e.offsetY);
+    const { selectedItem, index } = this.getItemByCoordinates(
+      e.offsetX,
+      e.offsetY
+    );
     if (selectedItem == null) return;
 
     if (selectedItem.type === "consumable") {
-      console.log("should eat");
+      this.player.consume(selectedItem);
+      selectedItem.decrement(1);
+      if (selectedItem.quantity === 0) {
+        this.emptyOutSlot(index);
+      }
+      this.updateCanvasView();
     }
   }
 
@@ -347,6 +355,11 @@ class Inventory {
     return true;
   }
 
+  emptyOutSlot(index) {
+    this.inventorySlots[index] = this.emptyConst;
+    this.drawSlot(index);
+  }
+
   takeFromInventory(itemName, itemType = "resource", itemQuantity) {
     let slot = this.getSlotByItemNameAndType(itemName, itemType);
     if (slot == null) return false;
@@ -357,9 +370,7 @@ class Inventory {
 
     if (slot.quantity === 0) {
       const idx = this.inventorySlots.indexOf(slot);
-      this.inventorySlots[idx] = this.emptyConst;
-
-      this.drawSlot(idx);
+      this.emptyOutSlot(idx);
     }
 
     this.updateCanvasView();

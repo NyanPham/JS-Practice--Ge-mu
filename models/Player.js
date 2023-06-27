@@ -1,19 +1,24 @@
 import Crafting from "./Crafting.js";
 import Inventory from "./Inventory.js";
 import PhysicalObject from "./PhysicalObject.js";
-import ResourceObstacle from "./Resources/ResourceObstacle.js";
+import ResourceObstacle, { FOOD_MAP } from "./Resources/ResourceObstacle.js";
+import Stats from "./Stats.js";
 import Tool from "./Tool.js";
 
 class Player extends PhysicalObject {
   constructor(game) {
     super(game, game.width * 0.5, game.height * 0.5, 30);
     this.speedModifier = 15;
+    this.canMove = true;
 
     this.inventory = new Inventory(this.game, this);
     this.crafting = new Crafting(this.game, this);
 
     this.rightHand = "barehand";
     // this.leftHand = "barehand";
+
+    this.stats = new Stats();
+    this.isDead = false;
   }
 
   /**
@@ -46,6 +51,16 @@ class Player extends PhysicalObject {
     return this.inventory.inventorySlots;
   }
 
+  consume(item) {
+    const { health, hunger, sanity } = FOOD_MAP.get(item.name);
+
+    
+
+    this.stats.addStat("hunger", hunger);
+    this.stats.addStat("health", health);
+    this.stats.addStat("sanity", sanity);
+  }
+
   /**
    *
    * @param {Tool} tool
@@ -64,6 +79,18 @@ class Player extends PhysicalObject {
 
   getEquippedToolIndex() {
     return this.inventory.equippedSlotIndex;
+  }
+
+  enableMovement() {
+    this.canMove = true;
+  }
+
+  disableMovement() {
+    this.canMove = false;
+  }
+
+  getHealth() {
+    return this.stats.health;
   }
 
   draw(context) {
@@ -89,9 +116,19 @@ class Player extends PhysicalObject {
     context.moveTo(this.collisionX, this.collisionY);
     context.lineTo(x, y);
     context.stroke();
+
+    this.stats.draw();
   }
 
   update(deltaTime) {
+    this.stats.update(deltaTime);
+
+    if (this.getHealth() === 0) {
+      this.isDead = true;
+    }
+
+    if (!this.canMove || this.isDead) return;
+
     const { x, y } = this.game.mouse.getPosition();
 
     const { distance, dx, dy } = PhysicalObject.getDistance(this, {

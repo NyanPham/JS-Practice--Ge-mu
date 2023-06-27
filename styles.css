@@ -21,10 +21,16 @@ body {
 
 #inventory,
 #crafting,
-#equipped {
+#equipped,
+#player-stats {
   position: fixed;
   bottom: 5rem;
   background: transparent;
+}
+  
+#player-stats {
+  top: 5rem;
+  right: 3rem;
 }
 
 #inventory {

@@ -15,6 +15,7 @@ class Game {
     this.mouse = new Mouse(this.width * 0.5, this.height * 0.5);
     this.camera = new Camera(this);
     this.environmentManager = new EnvironmentManager(this);
+    this.disableMovementInterval = null;
 
     // this.fps = 60;
     // this.fpsInterval = 1000 / this.fps;
@@ -41,7 +42,10 @@ class Game {
       }
     });
 
-    this.canvas.addEventListener("click", this.handleResourceClick.bind(this));
+    this.canvas.addEventListener(
+      "mousedown",
+      this.handleResourceClick.bind(this)
+    );
   }
 
   updateObjectsToRender() {
@@ -51,7 +55,10 @@ class Game {
   handleResourceClick(e) {
     const item = this.environmentManager.checkInteracting(e);
     if (item != null) {
+      this.player.disableMovement();
       this.player.collect(item);
+    } else {
+      this.player.enableMovement();
     }
   }
 
