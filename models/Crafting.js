@@ -27,7 +27,7 @@ class Crafting {
         type: "tool",
         durability: 10,
         materials: {
-          wood: 3,
+          wood: 12,
         },
       },
       pickaxe: {
@@ -41,10 +41,12 @@ class Crafting {
       firecamp: {
         name: "Firecamp",
         type: "placeable",
+        placeImage: "campfire.png",
+        collisionRadius: 70,
         constantDropDurability: true,
         durability: 60 * 1000,
         materials: {
-          wood: 50,
+          wood: 3,
         },
       },
     };
@@ -152,7 +154,9 @@ class Crafting {
         craftingItem.name,
         craftingItem.type,
         1,
-        craftingItem.durability
+        craftingItem.durability,
+        craftingItem.placeImage,
+        craftingItem.collisionRadius
       );
     }
   }

@@ -21,6 +21,7 @@ class Player extends PhysicalObject {
 
     this.stats = new Stats();
     this.isDead = false;
+    this.isPlacingObject = false;
   }
 
   /**

@@ -1,5 +1,6 @@
 import InventoryItem from "./InventoryItem.js";
 import Tool from "./Tool.js";
+import Placeable from "./items/Placeable.js";
 
 class Inventory {
   constructor(game, player) {
@@ -43,6 +44,7 @@ class Inventory {
     this.equipContext.textAlign = "center";
 
     this.equippedSlotIndex = null;
+    this.objectPlacingIndex = null;
 
     this.isDragging = false;
     this.dragStartIndex = null;
@@ -247,6 +249,14 @@ class Inventory {
 
       this.updateCanvasView();
     }
+
+    if (selectedItem.type === "placeable") {
+      this.game.mouse.enableMouseCursor(
+        selectedItem.placeImage.src,
+        selectedItem.collisionRadius
+      );
+      this.player.isPlacingObject = true;
+    }
   }
 
   handleRightClickItem(e) {
@@ -334,16 +344,33 @@ class Inventory {
    * @param {string} itemType
    * @param {number} itemQuantity
    */
-  addToInventory(itemName, itemType, itemQuantity, durability = null) {
+  addToInventory(
+    itemName,
+    itemType,
+    itemQuantity,
+    durability = null,
+    placeImage,
+    collisionRadius
+  ) {
     let emptyIdx;
 
     let slot = this.getSlotByItemNameAndType(itemName, itemType);
 
-    if (slot == null || itemType === "tool") {
-      slot =
-        itemType === "tool"
-          ? new Tool(itemName, itemType, durability)
-          : new InventoryItem(itemName, itemType, 0);
+    if (slot == null || itemType === "tool" || itemType === "placeable") {
+      if (itemType === "tool") {
+        slot = new Tool(itemName, itemType, durability);
+      } else if (itemType === "placeable") {
+        slot = new Placeable(
+          itemName,
+          itemType,
+          durability,
+          placeImage,
+          collisionRadius
+        );
+      } else {
+        slot = new InventoryItem(itemName, itemType, 0);
+      }
+
       emptyIdx = this.inventorySlots.findIndex(
         (slot) => slot == this.emptyConst
       );

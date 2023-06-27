@@ -5,7 +5,7 @@ class Stats {
     this.maxSanity = 100;
 
     this.health = 100;
-    this.hunger = 30;
+    this.hunger = 100;
     this.sanity = 50;
 
     this.statsWidth = 85;

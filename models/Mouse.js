@@ -3,6 +3,33 @@ class Mouse {
     this.x = x;
     this.y = y;
     this.pressed = false;
+
+    this.useMouseCursor = false;
+    this.mouseCursor = document.getElementById("mouse-cursor");
+    this.mouseCursorImage = this.mouseCursor.querySelector(
+      "[ data-mouse-cursor-image]"
+    );
+  }
+
+  enableMouseCursor(src, radius) {
+    this.useMouseCursor = true;
+    this.mouseCursorImage.src = src;
+    this.mouseCursor.style.setProperty("--radius", radius);
+    this.mouseCursor.style.setProperty("--position-x", this.x);
+    this.mouseCursor.style.setProperty("--position-y", this.y);
+    this.mouseCursor.classList.add("show");
+  }
+
+  disableMouseCursor() {
+    this.useMouseCursor = false;
+    this.mouseCursor.classList.remove("show");
+  }
+
+  setCursorMousePosition(x, y) {
+    if (this.useMouseCursor) {
+      this.mouseCursor.style.setProperty("--position-x", x);
+      this.mouseCursor.style.setProperty("--position-y", y);
+    }
   }
 
   setPosition(x, y) {

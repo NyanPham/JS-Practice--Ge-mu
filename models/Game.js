@@ -29,24 +29,35 @@ class Game {
     this.numOfObstacles = 30;
 
     this.canvas.addEventListener("mousedown", (e) => {
-      this.mouse.togglePressed(true);
-      this.mouse.setPosition(e.offsetX, e.offsetY);
+      console.log(e.button);
+      if (e.button === 0) {
+        this.mouse.togglePressed(true);
+        this.mouse.setPosition(e.offsetX, e.offsetY);
+      }
     });
 
     this.canvas.addEventListener("mouseup", (e) => {
-      this.mouse.togglePressed(false);
-      this.mouse.setPosition(e.offsetX, e.offsetY);
+      if (e.button === 0) {
+        this.mouse.togglePressed(false);
+        this.mouse.setPosition(e.offsetX, e.offsetY);
+      }
     });
 
     this.canvas.addEventListener("mousemove", (e) => {
       if (this.mouse.isPressed()) {
         this.mouse.setPosition(e.offsetX, e.offsetY);
       }
+      this.mouse.setCursorMousePosition(e.clientX, e.clientY);
     });
 
     this.canvas.addEventListener(
       "mousedown",
       this.handleResourceClick.bind(this)
+    );
+
+    this.canvas.addEventListener(
+      "contextmenu",
+      this.handleRightClick.bind(this)
     );
   }
 
@@ -55,12 +66,29 @@ class Game {
   }
 
   handleResourceClick(e) {
+    if (e.button !== 0) return;
+
     const item = this.environmentManager.checkInteracting(e);
+
     if (item != null) {
       this.player.disableMovement();
       this.player.collect(item);
     } else {
       this.player.enableMovement();
+    }
+
+    if (this.player.isPlacingObject) {
+      // create object at mouse position;
+      this.mouse.disableMouseCursor();
+      this.player.isPlacingObject = false;
+    }
+  }
+
+  handleRightClick(e) {
+    e.preventDefault();
+
+    if (this.mouse.useMouseCursor) {
+      this.mouse.disableMouseCursor();
     }
   }
 
