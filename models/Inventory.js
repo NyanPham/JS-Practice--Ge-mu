@@ -69,7 +69,7 @@ class Inventory {
 
     this.inventoryCanvas.addEventListener(
       "contextmenu",
-      this.handleConsumeItem.bind(this)
+      this.handleRightClickItem.bind(this)
     );
 
     this.inventoryCanvas.addEventListener(
@@ -89,7 +89,6 @@ class Inventory {
 
     this.equipCanvas.addEventListener("click", () => {
       this.player.removeTool();
-      this.equippedSlotIndex = null;
       this.updateCanvasView();
     });
 
@@ -250,7 +249,7 @@ class Inventory {
     }
   }
 
-  handleConsumeItem(e) {
+  handleRightClickItem(e) {
     e.preventDefault();
 
     const { selectedItem, index } = this.getItemByCoordinates(
@@ -265,8 +264,13 @@ class Inventory {
       if (selectedItem.quantity === 0) {
         this.emptyOutSlot(index);
       }
-      this.updateCanvasView();
     }
+
+    if (selectedItem.type === "tool" && index === this.equippedSlotIndex) {
+      this.player.removeTool();
+    }
+
+    this.updateCanvasView();
   }
 
   handleDrag(e) {
@@ -317,7 +321,6 @@ class Inventory {
         this.inventorySlots[i] = this.emptyConst;
         if (i === this.equippedSlotIndex) {
           this.player.removeTool();
-          this.equippedSlotIndex = null;
         }
 
         this.drawSlot(i);
@@ -410,7 +413,6 @@ class Inventory {
         this.inventorySlots[this.dragStartIndex] = this.emptyConst;
         if (this.dragStartIndex === this.equippedSlotIndex) {
           this.player.removeTool();
-          this.equippedSlotIndex = null;
         }
 
         this.drawSlot(this.dragStartIndex);

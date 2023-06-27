@@ -1,6 +1,6 @@
 import Obstacle from "../Obstacle.js";
 
-export const FOOD_MAP = new Map([
+export const ITEM_VALUE_MAP = new Map([
   ["berry", { health: 1, hunger: 7, sanity: 0 }],
 ]);
 

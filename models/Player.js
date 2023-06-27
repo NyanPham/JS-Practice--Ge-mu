@@ -1,7 +1,9 @@
 import Crafting from "./Crafting.js";
 import Inventory from "./Inventory.js";
 import PhysicalObject from "./PhysicalObject.js";
-import ResourceObstacle, { FOOD_MAP } from "./Resources/ResourceObstacle.js";
+import ResourceObstacle, {
+  ITEM_VALUE_MAP,
+} from "./Resources/ResourceObstacle.js";
 import Stats from "./Stats.js";
 import Tool from "./Tool.js";
 
@@ -52,9 +54,7 @@ class Player extends PhysicalObject {
   }
 
   consume(item) {
-    const { health, hunger, sanity } = FOOD_MAP.get(item.name);
-
-    
+    const { health, hunger, sanity } = ITEM_VALUE_MAP.get(item.name);
 
     this.stats.addStat("hunger", hunger);
     this.stats.addStat("health", health);
@@ -71,6 +71,7 @@ class Player extends PhysicalObject {
 
   removeTool() {
     this.rightHand = "barehand";
+    this.inventory.equippedSlotIndex = null;
   }
 
   getEquippedTool() {
