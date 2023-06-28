@@ -19,17 +19,19 @@ body {
   transform: translateX(calc(var(--translate-x) * -1px))
     translateY(calc(var(--translate-y) * -1px));
 }
-  
+
 .night-overlay {
+  --darkness: rgba(0, 0, 0, 0.7);
+
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--darkness);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 500ms ease-in;
+  transition: opacity 500ms ease-in, background 150ms ease;
 }
 
 .night-overlay.fall {
@@ -45,7 +47,7 @@ body {
   bottom: 5rem;
   background: transparent;
 }
-  
+
 #player-stats {
   top: 5rem;
   right: 3rem;
@@ -153,8 +155,9 @@ body {
   width: calc(var(--radius) * 2px);
   height: calc(var(--radius) * 2px);
   background: black;
-  pointer-events: none; 
-  transform: translateX(calc((var(--position-x) - (var(--radius))) * 1px)) translateY(calc((var(--position-y) - (var(--radius))) * 1px));
+  pointer-events: none;
+  transform: translateX(calc((var(--position-x) - (var(--radius))) * 1px))
+    translateY(calc((var(--position-y) - (var(--radius))) * 1px));
 }
 
 #mouse-cursor.show {

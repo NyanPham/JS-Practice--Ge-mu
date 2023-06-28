@@ -3,9 +3,12 @@ class DayCycleManager {
     this.game = game;
 
     this.nightOverlay = document.querySelector("[data-night-overlay]");
+    this.defaultDarkness = getComputedStyle(this.nightOverlay).getPropertyValue(
+      "--darkness"
+    );
 
-    this.dayInterval = 4.5 * 60 * 1000;
-    this.nightInterval = 2.5 * 60 * 1000;
+    this.dayInterval = 0 * 60 * 1000;
+    this.nightInterval = 3.5 * 60 * 1000;
 
     this.dayNightCycleTimer = 0;
     this.dayCount = 1;
@@ -20,6 +23,14 @@ class DayCycleManager {
     this.context.textAlign = "center";
     this.color = ["#1abc9c", "#3498db", "#9b59b6", "#e74c3c"];
     this.currentcolor = this.color[Math.floor(Math.random() * (3 - 0))];
+  }
+
+  setDarkness(value) {
+    if (value == null) {
+      this.nightOverlay.style.setProperty("--darkness", this.defaultDarkness);
+    } else {
+      this.nightOverlay.style.setProperty("--darkness", value);
+    }
   }
 
   updateDayNight(deltaTime) {

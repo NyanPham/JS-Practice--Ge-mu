@@ -1,5 +1,70 @@
 import { createElement } from "../helper/domUtils.js";
-import Tool from "./Tool.js";
+import PhysicalObject from "./PhysicalObject.js";
+
+export const CRAFTING_MAP = {
+  axe: {
+    name: "Axe",
+    type: "tool",
+    durability: 10,
+    materials: {
+      wood: 3,
+    },
+  },
+  pickaxe: {
+    name: "Pickaxe",
+    type: "tool",
+    durability: 15,
+    materials: {
+      wood: 30,
+    },
+  },
+  firecamp: {
+    name: "Firecamp",
+    type: "placeable",
+    placeImage: "campfire.png",
+    collisionRadius: 35,
+    constantDropDurability: true,
+    durability: 2 * 60 * 1000,
+    materials: {
+      wood: 5,
+    },
+    customProperties: function () {
+      this.lightRadius = this.collisionRadius * 7;
+    },
+    draw: function (context) {
+      context.beginPath();
+      context.arc(
+        this.collisionX,
+        this.collisionY,
+        this.collisionRadius,
+        0,
+        Math.PI * 2
+      );
+      context.save();
+      context.globalAlpha = 0.5;
+      context.fillStyle = "yellow";
+      context.fill();
+      context.restore();
+      context.stroke();
+
+      context.beginPath();
+      context.arc(
+        this.collisionX,
+        this.collisionY,
+        this.lightRadius || 0,
+        0,
+        Math.PI * 2
+      );
+      context.save();
+      context.globalAlpha = 0.3;
+      context.fillStyle = "yellow";
+      context.fill();
+      context.restore();
+    },
+    update: function (deltaTime) {},
+    onRemoval: function () {},
+  },
+};
 
 class Crafting {
   constructor(game, player) {
@@ -21,35 +86,7 @@ class Crafting {
     this.craftingContext.font = "40px serif";
     this.craftingContext.textAlign = "center";
 
-    this.craftingItemsMap = {
-      axe: {
-        name: "Axe",
-        type: "tool",
-        durability: 10,
-        materials: {
-          wood: 3,
-        },
-      },
-      pickaxe: {
-        name: "Pickaxe",
-        type: "tool",
-        durability: 15,
-        materials: {
-          wood: 30,
-        },
-      },
-      firecamp: {
-        name: "Firecamp",
-        type: "placeable",
-        placeImage: "campfire.png",
-        collisionRadius: 70,
-        constantDropDurability: true,
-        durability: 60 * 1000,
-        materials: {
-          wood: 5,
-        },
-      },
-    };
+    this.craftingItemsMap = CRAFTING_MAP;
 
     this.image = document.getElementById("chainsaw");
 

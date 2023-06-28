@@ -14,6 +14,11 @@ class EnvironmentManager {
     this.rocks = [];
     this.berryBushes = [];
     this.userObjects = [];
+
+    document.addEventListener(
+      "object-removal",
+      this.handleRemoveObjects.bind(this)
+    );
   }
 
   generate(type = "trees") {
@@ -69,8 +74,12 @@ class EnvironmentManager {
     );
 
     if (item == null) return null;
-    if (PhysicalObject.getDistance(item, this.game.player).distance > 120)
-      return null;
+    const { collided } = PhysicalObject.checkCollision(
+      item,
+      this.game.player,
+      30
+    );
+    if (!collided) return null;
 
     return item;
   }
@@ -92,6 +101,14 @@ class EnvironmentManager {
     }
 
     return false;
+  }
+
+  handleRemoveObjects() {
+    this.game.obstacles = this.game.obstacles.filter(
+      (obstacle) => !obstacle.markedForDeletion
+    );
+    this.userObjects = this.userObjects.filter((obj) => !obj.markedForDeletion);
+    this.game.updateObjectsToRender();
   }
 }
 

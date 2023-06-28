@@ -6,7 +6,7 @@ class Stats {
 
     this.health = 100;
     this.hunger = 100;
-    this.sanity = 50;
+    this.sanity = 100;
 
     this.statsWidth = 85;
     this.statsHeight = 85;
@@ -27,11 +27,16 @@ class Stats {
     this.healthRate = 7;
     this.healthReduceInterval = 1000;
     this.healthTimer = 0;
+
+    this.sanityRate = 1;
+    this.sanityDropInterval = 5000;
+    this.sanityTimer = 0;
   }
 
-  update(deltaTime) {
+  update(deltaTime, inDarkness) {
     this.updateConstantHunger(deltaTime);
     this.updateHealth(deltaTime);
+    this.updateSanity(deltaTime, inDarkness);
   }
 
   updateHealth(deltaTime) {
@@ -60,6 +65,20 @@ class Stats {
     }
 
     this.hungerTimer += deltaTime;
+  }
+
+  updateSanity(deltaTime, inDarkness) {
+    if (inDarkness) {
+      if (this.sanityTimer >= this.sanityDropInterval) {
+        this.sanity = Math.max(0, this.sanity - this.sanityRate);
+
+        this.sanityTimer = 0;
+      }
+
+      this.sanityTimer += deltaTime;
+    } else {
+      this.sanityTimer = 0;
+    }
   }
 
   draw() {

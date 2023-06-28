@@ -22,6 +22,8 @@ class Player extends PhysicalObject {
     this.stats = new Stats();
     this.isDead = false;
     this.isPlacingObject = false;
+
+    this.nearLightSource = false;
   }
 
   /**
@@ -149,7 +151,10 @@ class Player extends PhysicalObject {
   }
 
   update(deltaTime) {
-    this.stats.update(deltaTime);
+    this.stats.update(
+      deltaTime,
+      !this.nearLightSource && this.game.dayCycleManager.isNight
+    );
 
     if (this.getHealth() === 0) {
       this.isDead = true;
@@ -172,8 +177,13 @@ class Player extends PhysicalObject {
       this.speedY = 0;
     }
 
-    this.collisionX += this.speedX * this.speedModifier;
-    this.collisionY += this.speedY * this.speedModifier;
+    if (this.stats.sanity > 0) {
+      this.collisionX += this.speedX * this.speedModifier;
+      this.collisionY += this.speedY * this.speedModifier;
+    } else {
+      this.collisionX += this.speedY * this.speedModifier;
+      this.collisionY += this.speedX * this.speedModifier;
+    }
 
     this.game.obstacles.forEach((obstacle) => {
       const { collided, distance, sumOfRadii, dx, dy } =
@@ -189,6 +199,24 @@ class Player extends PhysicalObject {
         }
       }
     });
+
+    let hasLightSource = false;
+
+    this.game.environmentManager.userObjects.forEach((userObject) => {
+      if (userObject.name.toLowerCase() === "firecamp") {
+        if (
+          PhysicalObject.getDistance(this, userObject).distance <
+          userObject.lightRadius
+        ) {
+          hasLightSource = true;
+        }
+      }
+    });
+
+    this.nearLightSource = hasLightSource;
+    this.game.dayCycleManager.setDarkness(
+      hasLightSource ? "rgba(0, 0, 0, 0.1)" : null
+    );
   }
 }
 

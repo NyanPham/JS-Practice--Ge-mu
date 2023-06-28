@@ -7,6 +7,8 @@ class Tree extends ResourceObstacle {
     this.resourceName = "wood";
     this.requiredEquipments = ["barehand", "axe"];
 
+    this.collisionRadius = Math.floor(Math.random() * 100) + 35;
+
     this.exploitRateMap = {
       barehand: 1,
       axe: 3,

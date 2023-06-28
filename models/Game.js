@@ -1,13 +1,11 @@
 import Mouse from "./Mouse.js";
 import Player from "./Player.js";
-import Obstacle from "./Obstacle.js";
 import Camera from "./Camera.js";
-import PhysicalObject from "./PhysicalObject.js";
-import Tree from "./Resources/Tree.js";
 import EnvironmentManager from "./EnvironmentManager.js";
-import ResourceObstacle from "./Resources/ResourceObstacle.js";
 import DayCycleManager from "./DayCycleManager.js";
 import PlayerObject from "./Resources/PlayerObject.js";
+import PhysicalObject from "./PhysicalObject.js";
+import Enemy from "./Enemy.js";
 
 class Game {
   constructor(canvas) {
@@ -20,14 +18,18 @@ class Game {
 
     this.dayCycleManager = new DayCycleManager();
 
-    // this.fps = 60;
-    // this.fpsInterval = 1000 / this.fps;
-    // this.fpsTimer = 0;
+    this.fps = 60;
+    this.fpsInterval = 1000 / this.fps;
+    this.fpsTimer = 0;
 
     this.player = new Player(this);
     this.objectsToRender = [this.player];
     this.obstacles = [];
     this.numOfObstacles = 30;
+
+    this.objectToPlace = null;
+
+    this.enemy = new Enemy(this, this.width * 0.3, this.height * 0.3, 35);
 
     this.canvas.addEventListener("mousedown", (e) => {
       console.log(e.button);
@@ -63,7 +65,7 @@ class Game {
   }
 
   updateObjectsToRender() {
-    this.objectsToRender = [this.player, ...this.obstacles];
+    this.objectsToRender = [this.player, ...this.obstacles, this.enemy];
   }
 
   handleActionClick(e) {
@@ -91,16 +93,14 @@ class Game {
         itemData.name,
         itemData.type,
         itemData.durability,
-        itemData.constantDropDurability
+        itemData.constantDropDurability,
+        itemData.customProperties,
+        itemData.draw,
+        itemData.update,
+        itemData.onRemoval
       );
 
-      const isPlaced =
-        this.environmentManager.addUserObjectToWorld(playerObject);
-
-      if (isPlaced) {
-        this.player.placeItem();
-        this.mouse.disableMouseCursor();
-      }
+      this.objectToPlace = playerObject;
     }
   }
 
@@ -122,17 +122,39 @@ class Game {
   }
 
   render(context, deltaTime) {
-    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.fpsTimer > this.fpsInterval) {
+      context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.objectsToRender.forEach((obj) => {
-      obj.draw(context);
-      obj.update(deltaTime);
-    });
+      this.objectsToRender.forEach((obj) => {
+        obj.draw(context);
+        obj.update(deltaTime);
+      });
 
-    this.camera.updateView();
+      this.camera.updateView();
 
-    this.dayCycleManager.updateDayNight(deltaTime);
-    this.dayCycleManager.draw();
+      this.dayCycleManager.updateDayNight(deltaTime);
+      this.dayCycleManager.draw();
+
+      if (this.objectToPlace != null) {
+        if (
+          PhysicalObject.checkCollision(this.player, this.objectToPlace, 50)
+            .collided
+        ) {
+          const isPlaced = this.environmentManager.addUserObjectToWorld(
+            this.objectToPlace
+          );
+
+          if (isPlaced) {
+            this.player.placeItem();
+            this.mouse.disableMouseCursor();
+          }
+        }
+      }
+
+      this.fpsTimer = 0;
+    }
+
+    this.fpsTimer += deltaTime;
   }
 }
 
