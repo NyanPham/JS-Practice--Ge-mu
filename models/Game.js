@@ -27,9 +27,10 @@ class Game {
     this.obstacles = [];
     this.numOfObstacles = 30;
 
-    this.objectToPlace = null;
+    this.numOfEnemies = 35;
+    this.enemies = [];
 
-    this.enemy = new Enemy(this, this.width * 0.3, this.height * 0.3, 35);
+    this.objectToPlace = null;
 
     this.canvas.addEventListener("mousedown", (e) => {
       console.log(e.button);
@@ -65,7 +66,7 @@ class Game {
   }
 
   updateObjectsToRender() {
-    this.objectsToRender = [this.player, ...this.obstacles, this.enemy];
+    this.objectsToRender = [this.player, ...this.obstacles, ...this.enemies];
   }
 
   handleActionClick(e) {
@@ -117,6 +118,21 @@ class Game {
     this.environmentManager.generate("trees");
     this.environmentManager.generate("rocks");
     this.environmentManager.generate("berry");
+
+    let enemyAttempts = 0;
+
+    while (this.enemies.length < this.numOfEnemies && enemyAttempts < 300) {
+      this.enemies.push(
+        new Enemy(
+          this,
+          Math.random() * this.width,
+          Math.random() * this.height,
+          Math.random() * (35 - 25) + 25
+        )
+      );
+
+      enemyAttempts++;
+    }
 
     this.updateObjectsToRender();
   }

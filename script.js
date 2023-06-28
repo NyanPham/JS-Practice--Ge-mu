@@ -3,8 +3,8 @@ import Game from "./models/Game.js";
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = 1280 * 3;
-canvas.height = 720 * 3;
+canvas.width = 1280 * 6;
+canvas.height = 720 * 6;
 
 ctx.strokeStyle = "black";
 ctx.lineWidth = 3;

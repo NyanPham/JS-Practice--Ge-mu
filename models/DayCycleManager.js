@@ -7,8 +7,8 @@ class DayCycleManager {
       "--darkness"
     );
 
-    this.dayInterval = 0 * 60 * 1000;
-    this.nightInterval = 3.5 * 60 * 1000;
+    this.dayInterval = 4.5 * 60 * 1000;
+    this.nightInterval = 2.5 * 60 * 1000;
 
     this.dayNightCycleTimer = 0;
     this.dayCount = 1;

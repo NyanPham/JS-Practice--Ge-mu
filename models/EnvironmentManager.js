@@ -1,14 +1,13 @@
 import Tree from "./Resources/Tree.js";
 import Rock from "./Resources/Rock.js";
 import PhysicalObject from "./PhysicalObject.js";
-import InventoryItem from "./InventoryItem.js";
 import BerryBush from "./Resources/BerryBush.js";
 
 class EnvironmentManager {
   constructor(game) {
     this.game = game;
-    this.numOfTrees = 20;
-    this.numOfRocks = 20;
+    this.numOfTrees = 50;
+    this.numOfRocks = 50;
     this.numOfBerryBushses = 30;
     this.trees = [];
     this.rocks = [];

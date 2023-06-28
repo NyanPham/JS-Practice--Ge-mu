@@ -162,6 +162,16 @@ class Player extends PhysicalObject {
 
     if (!this.canMove || this.isDead) return;
 
+    this.moveToMouse();
+    this.checkCollisionsToObjects();
+    this.checkLightSource();
+
+    this.game.dayCycleManager.setDarkness(
+      this.nearLightSource ? "rgba(0, 0, 0, 0.1)" : null
+    );
+  }
+
+  moveToMouse() {
     const { x, y } = this.game.mouse.getPosition();
 
     const { distance, dx, dy } = PhysicalObject.getDistance(this, {
@@ -184,8 +194,10 @@ class Player extends PhysicalObject {
       this.collisionX += this.speedY * this.speedModifier;
       this.collisionY += this.speedX * this.speedModifier;
     }
+  }
 
-    this.game.obstacles.forEach((obstacle) => {
+  checkCollisionsToObjects() {
+    [...this.game.obstacles, ...this.game.enemies].forEach((obstacle) => {
       const { collided, distance, sumOfRadii, dx, dy } =
         PhysicalObject.checkCollision(this, obstacle, 0);
       if (collided) {
@@ -199,7 +211,9 @@ class Player extends PhysicalObject {
         }
       }
     });
+  }
 
+  checkLightSource() {
     let hasLightSource = false;
 
     this.game.environmentManager.userObjects.forEach((userObject) => {
@@ -214,9 +228,6 @@ class Player extends PhysicalObject {
     });
 
     this.nearLightSource = hasLightSource;
-    this.game.dayCycleManager.setDarkness(
-      hasLightSource ? "rgba(0, 0, 0, 0.1)" : null
-    );
   }
 }
 

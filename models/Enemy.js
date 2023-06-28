@@ -49,6 +49,8 @@ class Enemy extends PhysicalObject {
   }
 
   update(deltaTime) {
+    this.checkCollisionsToObjects();
+
     if (this.moveToPlayer()) return;
     if (this.suspicion(deltaTime)) return;
     this.guard();
@@ -118,6 +120,25 @@ class Enemy extends PhysicalObject {
 
     this.lastSeenPlayer = 0;
     return false;
+  }
+
+  checkCollisionsToObjects() {
+    [...this.game.obstacles, ...this.game.enemies].forEach((obstacle) => {
+      if (obstacle !== this) {
+        const { collided, distance, sumOfRadii, dx, dy } =
+          PhysicalObject.checkCollision(this, obstacle, 0);
+        if (collided) {
+          const unit_x = dx / distance;
+          const unit_y = dy / distance;
+
+          this.collisionX = obstacle.collisionX + (sumOfRadii + 1) * unit_x;
+          this.collisionY = obstacle.collisionY + (sumOfRadii + 1) * unit_y;
+          if (this.game.mouse.isWithin(obstacle)) {
+            this.game.mouse.setPosition(this.collisionX, this.collisionY);
+          }
+        }
+      }
+    });
   }
 
   attack() {}
