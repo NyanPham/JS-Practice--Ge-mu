@@ -28,7 +28,10 @@ class Enemy extends PhysicalObject {
     this.waitForSuspicion = 3000;
     this.lastSeenPlayer = 0;
 
-    this.stats = new Stats();
+    this.pathWidthMin = 150;
+    this.pathWidthMax = 500;
+
+    this.stats = new Stats(this);
     this.isDead = false;
   }
 

@@ -19,7 +19,7 @@ class Player extends PhysicalObject {
     this.rightHand = "barehand";
     // this.leftHand = "barehand";
 
-    this.stats = new Stats();
+    this.stats = new Stats(this);
     this.isDead = false;
     this.isPlacingObject = false;
 

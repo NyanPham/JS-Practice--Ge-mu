@@ -1,5 +1,7 @@
 class Stats {
-  constructor() {
+  constructor(entity) {
+    this.entity = entity;
+
     this.maxHealth = 100;
     this.maxHunger = 100;
     this.maxSanity = 100;
@@ -28,15 +30,17 @@ class Stats {
     this.healthReduceInterval = 1000;
     this.healthTimer = 0;
 
-    this.sanityRate = 1;
+    this.sanityRate = 3;
     this.sanityDropInterval = 5000;
     this.sanityTimer = 0;
   }
-
+  
   update(deltaTime, inDarkness) {
-    this.updateConstantHunger(deltaTime);
-    this.updateHealth(deltaTime);
-    this.updateSanity(deltaTime, inDarkness);
+    if (this.entity.constructor.name === "Player") {
+      this.updateHealth(deltaTime);
+      this.updateConstantHunger(deltaTime);
+      this.updateSanity(deltaTime, inDarkness);
+    }
   }
 
   updateHealth(deltaTime) {
