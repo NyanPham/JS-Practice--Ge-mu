@@ -1,13 +1,22 @@
 import PhysicalObject from "./PhysicalObject.js";
+import Stats from "./Stats.js";
 
 class Enemy extends PhysicalObject {
   constructor(game, x, y, radius) {
     super(game, x, y, radius);
 
-    this.attackRange = 300;
+    this.rageRange = 300;
+    this.attackRange = 30;
+    this.damage = 15;
+    this.attackInterval = 1000;
+    this.attackTimer = 0;
+
     this.speedX = 0;
     this.speedY = 0;
     this.speedModifier = 2.5;
+
+    this.runSpeed = 12;
+    this.walkSpeed = 3;
 
     this.firstPositionX = this.collisionX;
     this.firstPositionY = this.collisionY;
@@ -18,6 +27,9 @@ class Enemy extends PhysicalObject {
     this.distanceTolerance = 15;
     this.waitForSuspicion = 3000;
     this.lastSeenPlayer = 0;
+
+    this.stats = new Stats();
+    this.isDead = false;
   }
 
   draw(context) {
@@ -41,17 +53,52 @@ class Enemy extends PhysicalObject {
     context.arc(
       this.collisionX,
       this.collisionY,
-      this.collisionRadius + this.attackRange,
+      this.collisionRadius + this.rageRange,
       0,
       Math.PI * 2
     );
     context.stroke();
+    this.drawHealthBar(context);
+  }
+
+  drawHealthBar(context) {
+    const healthRatio = this.stats.health / this.stats.maxHealth;
+
+    context.beginPath();
+    context.rect(
+      this.collisionX - this.collisionRadius,
+      this.collisionY - this.collisionRadius - 12,
+      this.collisionRadius * 2,
+      5
+    );
+    context.save();
+    context.fillStyle = "gray";
+    context.fill();
+    context.restore();
+
+    context.beginPath();
+    context.rect(
+      this.collisionX - this.collisionRadius,
+      this.collisionY - this.collisionRadius - 12,
+      healthRatio * this.collisionRadius * 2,
+      5
+    );
+    context.save();
+    context.fillStyle = "green";
+    context.fill();
+    context.restore();
   }
 
   update(deltaTime) {
+    if (this.getHealth() === 0) {
+      this.isDead = true;
+    }
+
+    if (this.isDead) return;
+
     this.checkCollisionsToObjects();
 
-    if (this.moveToPlayer()) return;
+    if (this.moveToPlayer(deltaTime)) return;
     if (this.suspicion(deltaTime)) return;
     this.guard();
   }
@@ -64,16 +111,25 @@ class Enemy extends PhysicalObject {
     this.collisionY += this.speedY * this.speedModifier;
   }
 
-  moveToPlayer() {
+  moveToPlayer(deltaTime) {
     const { dx, dy, distance } = PhysicalObject.getDistance(
       this,
       this.game.player
     );
 
     if (
-      distance <
-      this.collisionRadius + this.attackRange + this.game.player.collisionRadius
+      distance <=
+      this.attackRange + this.collisionRadius + this.game.player.collisionRadius
     ) {
+      this.attack(this.game.player, deltaTime);
+      return true;
+    }
+    if (
+      distance <
+      this.collisionRadius + this.rageRange + this.game.player.collisionRadius
+    ) {
+      this.speedModifier = this.runSpeed;
+
       this.moveTo(distance, dx, dy);
       this.lastPositionX = this.game.player.collisionX;
       this.lastPositionY = this.game.player.collisionY;
@@ -103,6 +159,8 @@ class Enemy extends PhysicalObject {
   }
 
   suspicion(deltaTime) {
+    this.speedModifier = this.walkSpeed;
+
     const { distance, dx, dy } = PhysicalObject.getDistance(this, {
       collisionX: this.lastPositionX,
       collisionY: this.lastPositionY,
@@ -141,7 +199,23 @@ class Enemy extends PhysicalObject {
     });
   }
 
-  attack() {}
+  attack(target, deltaTime) {
+    if (target.stats == null) return;
+    if (this.attackTimer > this.attackInterval) {
+      target.takeDamage(this.damage);
+      this.attackTimer = 0;
+    }
+
+    this.attackTimer += deltaTime;
+  }
+
+  getHealth() {
+    return this.stats.health;
+  }
+
+  takeDamage(damage) {
+    this.stats.substractStat("health", damage);
+  }
 }
 
 export default Enemy;

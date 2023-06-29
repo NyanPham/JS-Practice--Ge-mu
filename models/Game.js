@@ -33,7 +33,6 @@ class Game {
     this.objectToPlace = null;
 
     this.canvas.addEventListener("mousedown", (e) => {
-      console.log(e.button);
       if (e.button === 0) {
         this.mouse.togglePressed(true);
         this.mouse.setPosition(e.offsetX, e.offsetY);
@@ -73,14 +72,22 @@ class Game {
     if (e.button !== 0) return;
 
     const item = this.environmentManager.checkInteracting(e);
+    this.collectionItemAction(item);
 
+    this.combatTargets();
+    this.placeObjectAction();
+  }
+
+  collectionItemAction(item) {
     if (item != null) {
       this.player.disableMovement();
       this.player.collect(item);
     } else {
       this.player.enableMovement();
     }
+  }
 
+  placeObjectAction() {
     if (this.player.isPlacingObject) {
       // create object at mouse position;
       const item = this.player.getPlacingItem();
@@ -105,12 +112,27 @@ class Game {
     }
   }
 
+  combatTargets() {
+    let enemy = this.enemies.find((enemy) => this.mouse.isWithin(enemy));
+
+    if (enemy == null) return null;
+    const { collided } = PhysicalObject.checkCollision(
+      enemy,
+      this.player,
+      this.player.attackRange
+    );
+    if (!collided) return null;
+
+    this.player.attack(enemy);
+  }
+
   handleRightClick(e) {
     e.preventDefault();
 
     if (this.mouse.useMouseCursor) {
       this.mouse.disableMouseCursor();
       this.player.cancelPlacingItem();
+      this.objectToPlace = null;
     }
   }
 

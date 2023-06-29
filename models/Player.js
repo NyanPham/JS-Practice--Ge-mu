@@ -24,6 +24,12 @@ class Player extends PhysicalObject {
     this.isPlacingObject = false;
 
     this.nearLightSource = false;
+
+    this.rageRange = 300;
+    this.attackRange = 30;
+    this.damage = 20;
+    this.attackInterval = 1000;
+    this.attackTimer = 0;
   }
 
   /**
@@ -103,6 +109,10 @@ class Player extends PhysicalObject {
     return this.stats.health;
   }
 
+  takeDamage(damage) {
+    this.stats.substractStat("health", damage);
+  }
+
   startPlacingItem() {
     this.isPlacingObject = true;
   }
@@ -151,6 +161,9 @@ class Player extends PhysicalObject {
   }
 
   update(deltaTime) {
+    this.deltaTime = deltaTime;
+    this.attackTimer += this.deltaTime;
+
     this.stats.update(
       deltaTime,
       !this.nearLightSource && this.game.dayCycleManager.isNight
@@ -228,6 +241,15 @@ class Player extends PhysicalObject {
     });
 
     this.nearLightSource = hasLightSource;
+  }
+
+  attack(target) {
+    if (target.stats == null) return;
+
+    if (this.attackTimer > this.attackInterval) {
+      target.takeDamage(this.damage);
+      this.attackTimer = 0;
+    }
   }
 }
 

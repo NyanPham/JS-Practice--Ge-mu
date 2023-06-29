@@ -148,6 +148,10 @@ class Stats {
     const maxStat = this[`max${statName[0].toUpperCase() + statName.slice(1)}`];
     this[statName] = Math.min(maxStat, this[statName] + value);
   }
+
+  substractStat(statName, decrement) {
+    this[statName] = Math.max(0, this[statName] - decrement);
+  }
 }
 
 export default Stats;
