@@ -25,7 +25,7 @@ class Game {
     this.player = new Player(this);
     this.objectsToRender = [this.player];
     this.obstacles = [];
-    this.numOfObstacles = 30;
+    this.nonObstacles = [];
 
     this.numOfEnemies = 35;
     this.enemies = [];
@@ -65,7 +65,12 @@ class Game {
   }
 
   updateObjectsToRender() {
-    this.objectsToRender = [this.player, ...this.obstacles, ...this.enemies];
+    this.objectsToRender = [
+      this.player,
+      ...this.obstacles,
+      ...this.nonObstacles,
+      ...this.enemies,
+    ];
   }
 
   handleActionClick(e) {
@@ -123,7 +128,7 @@ class Game {
     );
     if (!collided) return null;
 
-    this.player.attack(enemy);
+    this.player.attackGlobalTimer(enemy);
   }
 
   handleRightClick(e) {
@@ -140,7 +145,9 @@ class Game {
     this.environmentManager.generate("trees");
     this.environmentManager.generate("rocks");
     this.environmentManager.generate("berry");
+    this.environmentManager.generate("grass");
 
+    console.log(this.environmentManager.grassTurfs);
     let enemyAttempts = 0;
 
     while (this.enemies.length < this.numOfEnemies && enemyAttempts < 300) {

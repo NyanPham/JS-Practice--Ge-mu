@@ -1,6 +1,8 @@
+import { attackTarget, attacker, hasHealth } from "../combat/combat.js";
 import Crafting from "./Crafting.js";
 import Inventory from "./Inventory.js";
 import PhysicalObject from "./PhysicalObject.js";
+import Resource from "./Resources/Resource.js";
 import ResourceObstacle, {
   ITEM_VALUE_MAP,
 } from "./Resources/ResourceObstacle.js";
@@ -34,10 +36,13 @@ class Player extends PhysicalObject {
 
   /**
    *
-   * @param {ResourceObstacle} resourceItem
+   * @param {ResourceObstacle | Resource} resourceItem
    */
   collect(resourceItem) {
-    if (resourceItem instanceof ResourceObstacle) {
+    if (
+      resourceItem instanceof ResourceObstacle ||
+      resourceItem instanceof Resource
+    ) {
       const extracted = resourceItem.getCollected(
         this.rightHand,
         this.getEquippedTool()
@@ -107,10 +112,6 @@ class Player extends PhysicalObject {
 
   getHealth() {
     return this.stats.health;
-  }
-
-  takeDamage(damage) {
-    this.stats.substractStat("health", damage);
   }
 
   startPlacingItem() {
@@ -242,15 +243,10 @@ class Player extends PhysicalObject {
 
     this.nearLightSource = hasLightSource;
   }
-
-  attack(target) {
-    if (target.stats == null) return;
-
-    if (this.attackTimer > this.attackInterval) {
-      target.takeDamage(this.damage);
-      this.attackTimer = 0;
-    }
-  }
 }
+
+Object.assign(Player.prototype, hasHealth);
+Object.assign(Player.prototype, attackTarget);
+Object.assign(Player.prototype, attacker);
 
 export default Player;

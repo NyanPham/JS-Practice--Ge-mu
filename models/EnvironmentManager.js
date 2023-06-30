@@ -2,6 +2,9 @@ import Tree from "./Resources/Tree.js";
 import Rock from "./Resources/Rock.js";
 import PhysicalObject from "./PhysicalObject.js";
 import BerryBush from "./Resources/BerryBush.js";
+import GrassTurf from "./Resources/GrassTurf.js";
+
+const obstacle_types = ["trees", "rocks", "berry"];
 
 class EnvironmentManager {
   constructor(game) {
@@ -9,9 +12,11 @@ class EnvironmentManager {
     this.numOfTrees = 50;
     this.numOfRocks = 50;
     this.numOfBerryBushses = 30;
+    this.numOfGrass = 50;
     this.trees = [];
     this.rocks = [];
     this.berryBushes = [];
+    this.grassTurfs = [];
     this.userObjects = [];
 
     document.addEventListener(
@@ -38,6 +43,10 @@ class EnvironmentManager {
         currentArray = this.berryBushes;
         maxNum = this.numOfBerryBushses;
         break;
+      case "grass":
+        currentArray = this.grassTurfs;
+        maxNum = this.numOfGrass;
+        break;
       default:
         currentArray = this.trees;
         maxNum = this.numOfTrees;
@@ -48,8 +57,10 @@ class EnvironmentManager {
         testObject = new Tree(this.game);
       } else if (type === "rocks") {
         testObject = new Rock(this.game);
-      } else {
+      } else if (type === "berry") {
         testObject = new BerryBush(this.game);
+      } else {
+        testObject = new GrassTurf(this.game);
       }
 
       let overlap = false;
@@ -62,15 +73,23 @@ class EnvironmentManager {
 
       if (!overlap) {
         currentArray.push(testObject);
-        this.game.obstacles.push(testObject);
+
+        if (obstacle_types.includes(type)) {
+          this.game.obstacles.push(testObject);
+        } else {
+          this.game.nonObstacles.push(testObject);
+        }
       }
     }
   }
 
   checkInteracting(e) {
-    let item = [...this.trees, ...this.rocks, ...this.berryBushes].find(
-      (item) => this.game.mouse.isWithin(item)
-    );
+    let item = [
+      ...this.trees,
+      ...this.rocks,
+      ...this.berryBushes,
+      ...this.grassTurfs,
+    ].find((item) => this.game.mouse.isWithin(item));
 
     if (item == null) return null;
     const { collided } = PhysicalObject.checkCollision(

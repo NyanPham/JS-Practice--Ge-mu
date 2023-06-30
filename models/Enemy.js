@@ -1,5 +1,65 @@
+import { attackTarget, attacker, hasHealth } from "../combat/combat.js";
 import PhysicalObject from "./PhysicalObject.js";
 import Stats from "./Stats.js";
+
+const generalUpdate = {
+  update(deltaTime) {
+    if (this.getHealth() === 0) {
+      this.isDead = true;
+    }
+
+    if (this.isDead) return;
+
+    this.checkCollisionsToObjects();
+
+    if (this.moveToPlayer(deltaTime)) return;
+    if (this.suspicion(deltaTime)) return;
+    this.guard();
+  },
+};
+
+const suspicionBehavior = {
+  suspicion(deltaTime) {
+    this.speedModifier = this.walkSpeed;
+
+    const { distance, dx, dy } = PhysicalObject.getDistance(this, {
+      collisionX: this.lastPositionX,
+      collisionY: this.lastPositionY,
+    });
+
+    if (distance > 70) {
+      this.moveTo(distance, dx, dy);
+      return true;
+    }
+
+    if (this.lastSeenPlayer < this.waitForSuspicion) {
+      this.lastSeenPlayer += deltaTime;
+      return true;
+    }
+
+    this.lastSeenPlayer = 0;
+    return false;
+  },
+};
+
+const guardBehavior = {
+  guard() {
+    this.lastPositionX = this.firstPositionX;
+    this.lastPositionY = this.firstPositionY;
+
+    const { distance, dx, dy } = PhysicalObject.getDistance(this, {
+      collisionX: this.firstPositionX,
+      collisionY: this.firstPositionY,
+    });
+
+    if (distance > this.distanceTolerance) {
+      this.moveTo(distance, dx, dy);
+      return true;
+    }
+
+    return false;
+  },
+};
 
 class Enemy extends PhysicalObject {
   constructor(game, x, y, radius) {
@@ -92,20 +152,6 @@ class Enemy extends PhysicalObject {
     context.restore();
   }
 
-  update(deltaTime) {
-    if (this.getHealth() === 0) {
-      this.isDead = true;
-    }
-
-    if (this.isDead) return;
-
-    this.checkCollisionsToObjects();
-
-    if (this.moveToPlayer(deltaTime)) return;
-    if (this.suspicion(deltaTime)) return;
-    this.guard();
-  }
-
   moveTo(distance, dx, dy) {
     this.speedX = dx / distance;
     this.speedY = dy / distance;
@@ -144,45 +190,6 @@ class Enemy extends PhysicalObject {
     return false;
   }
 
-  guard() {
-    this.lastPositionX = this.firstPositionX;
-    this.lastPositionY = this.firstPositionY;
-
-    const { distance, dx, dy } = PhysicalObject.getDistance(this, {
-      collisionX: this.firstPositionX,
-      collisionY: this.firstPositionY,
-    });
-
-    if (distance > this.distanceTolerance) {
-      this.moveTo(distance, dx, dy);
-      return true;
-    }
-
-    return false;
-  }
-
-  suspicion(deltaTime) {
-    this.speedModifier = this.walkSpeed;
-
-    const { distance, dx, dy } = PhysicalObject.getDistance(this, {
-      collisionX: this.lastPositionX,
-      collisionY: this.lastPositionY,
-    });
-
-    if (distance > 70) {
-      this.moveTo(distance, dx, dy);
-      return true;
-    }
-
-    if (this.lastSeenPlayer < this.waitForSuspicion) {
-      this.lastSeenPlayer += deltaTime;
-      return true;
-    }
-
-    this.lastSeenPlayer = 0;
-    return false;
-  }
-
   checkCollisionsToObjects() {
     [...this.game.obstacles, ...this.game.enemies].forEach((obstacle) => {
       if (obstacle !== this) {
@@ -201,24 +208,14 @@ class Enemy extends PhysicalObject {
       }
     });
   }
-
-  attack(target, deltaTime) {
-    if (target.stats == null) return;
-    if (this.attackTimer > this.attackInterval) {
-      target.takeDamage(this.damage);
-      this.attackTimer = 0;
-    }
-
-    this.attackTimer += deltaTime;
-  }
-
-  getHealth() {
-    return this.stats.health;
-  }
-
-  takeDamage(damage) {
-    this.stats.substractStat("health", damage);
-  }
 }
+
+Object.assign(Enemy.prototype, guardBehavior);
+Object.assign(Enemy.prototype, suspicionBehavior);
+Object.assign(Enemy.prototype, generalUpdate);
+
+Object.assign(Enemy.prototype, hasHealth);
+Object.assign(Enemy.prototype, attackTarget);
+Object.assign(Enemy.prototype, attacker);
 
 export default Enemy;

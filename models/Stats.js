@@ -34,7 +34,7 @@ class Stats {
     this.sanityDropInterval = 5000;
     this.sanityTimer = 0;
   }
-  
+
   update(deltaTime, inDarkness) {
     if (this.entity.constructor.name === "Player") {
       this.updateHealth(deltaTime);

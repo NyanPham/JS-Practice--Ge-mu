@@ -1,11 +1,6 @@
-import Obstacle from "../Obstacle.js";
 import { resourceActions } from "./ResourceProperties.js";
 
-export const ITEM_VALUE_MAP = new Map([
-  ["berry", { health: 1, hunger: 7, sanity: 0 }],
-]);
-
-class ResourceObstacle extends Obstacle {
+class Resource {
   constructor(
     game,
     x = null,
@@ -14,10 +9,13 @@ class ResourceObstacle extends Obstacle {
     name = "resource",
     resevoir = null,
     resourceName = "item",
-    requiredEquipments = ["barehand"],
-    consumable = false
+    requiredEquipments = ["barehand"]
   ) {
-    super(game, x, y, radius);
+    this.game = game;
+    this.collisionX = x || Math.random() * this.game.width;
+    this.collisionY = y || Math.random() * this.game.height;
+    this.collisionRadius = radius;
+
     this.refillInterval = null;
     this.refillTime = 7000;
 
@@ -31,8 +29,9 @@ class ResourceObstacle extends Obstacle {
 
     this.exploitRateMap = {};
   }
+
+  update() {}
 }
 
-Object.assign(ResourceObstacle.prototype, resourceActions);
-
-export default ResourceObstacle;
+Object.assign(Resource.prototype, resourceActions);
+export default Resource;
