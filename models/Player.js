@@ -1,4 +1,5 @@
 import { attackTarget, attacker, hasHealth } from "../combat/combat.js";
+import { deadAnimator } from "./Common.js";
 import Crafting from "./Crafting.js";
 import Inventory from "./Inventory.js";
 import PhysicalObject from "./PhysicalObject.js";
@@ -49,6 +50,13 @@ class Player extends PhysicalObject {
 
     this.frameTimer = 0;
     this.frameInterval = 75;
+
+    this.deadInterval = 100;
+    this.deadTime = 0;
+    this.deadAnimationEnded = false;
+    this.deadAnimationStarted = false;
+    this.lastDeadFrameIndex = 2;
+    this.deadFrameRow = 9;
 
     this.isMoving = false;
   }
@@ -156,7 +164,6 @@ class Player extends PhysicalObject {
   draw(context) {
     const { x, y } = this.game.mouse.getPosition();
 
-    context.save();
     context.drawImage(
       this.image,
       this.frameX * this.spriteWidth,
@@ -168,7 +175,6 @@ class Player extends PhysicalObject {
       this.width,
       this.height
     );
-    context.restore();
 
     this.inventory.draw(context);
     this.stats.draw();
@@ -204,11 +210,12 @@ class Player extends PhysicalObject {
       !this.nearLightSource && this.game.dayCycleManager.isNight
     );
 
+    if (this.isDead) this.playDeadAnimation(deltaTime);
+    if (!this.canMove || this.isDead) return;
+
     if (this.getHealth() === 0) {
       this.isDead = true;
     }
-
-    if (!this.canMove || this.isDead) return;
 
     const { distance, dx, dy } = this.moveToMouse();
     this.updateFrameLoop(deltaTime, dx, dy);
@@ -221,24 +228,35 @@ class Player extends PhysicalObject {
   }
 
   updateFrameLoop(deltaTime, dx, dy) {
-    const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+    const radian = Math.atan2(dy, dx);
 
     if (this.frameTimer > this.frameInterval) {
       this.image = this.normalImage;
 
-      if (angle > 0 && angle < 135) {
-        this.frameY = this.isMoving ? 3 : 0;
-      } else if (angle < -135 && angle < 135) {
+      if (
+        (radian < -2.36 && radian > -3.14) ||
+        (radian > 2.36 && radian < 3.14)
+      ) {
         this.frameY = this.isMoving ? 4 : 1;
         this.image = this.flippedImage;
-      } else if (angle > -45 && angle < 45) {
+      } else if (
+        (radian > -0.79 && radian < 0) ||
+        (radian > 0 && radian < 0.79)
+      ) {
         this.frameY = this.isMoving ? 4 : 1;
-      } else if (angle < -45 && angle > -135) {
+      } else if (radian > 0 && radian < 2.36) {
+        this.frameY = this.isMoving ? 3 : 0;
+      } else if (radian < -0.79 && radian > -2.36) {
         this.frameY = this.isMoving ? 5 : 2;
       }
 
-      this.frameX++;
-      if (this.frameX > 5) this.frameX = 0;
+      if (this.image === this.normalImage) {
+        this.frameX++;
+        if (this.frameX > 5) this.frameX = 0;
+      } else {
+        this.frameX--;
+        if (this.frameX < 0) this.frameX = 5;
+      }
 
       this.frameTimer = 0;
     }
@@ -313,6 +331,7 @@ class Player extends PhysicalObject {
   }
 }
 
+Object.assign(Player.prototype, deadAnimator);
 Object.assign(Player.prototype, hasHealth);
 Object.assign(Player.prototype, attackTarget);
 Object.assign(Player.prototype, attacker);

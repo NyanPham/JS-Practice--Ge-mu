@@ -32,7 +32,7 @@ class Game {
 
     this.objectToPlace = null;
     this.debug = false;
-    
+
     this.canvas.addEventListener("mousedown", (e) => {
       if (e.button === 0) {
         this.mouse.togglePressed(true);

@@ -1,3 +1,4 @@
+import { deadAnimator } from "./Common.js";
 import Enemy from "./Enemy.js";
 
 class Slime extends Enemy {
@@ -5,7 +6,7 @@ class Slime extends Enemy {
     super(game, x, y, radius);
 
     this.normalImage = document.getElementById("slime-image");
-    this.flipped = document.getElementById("slime-flipped-image");
+    this.flippedImage = document.getElementById("slime-flipped-image");
 
     this.image = this.normalImage;
     this.spriteWidth = 32;
@@ -23,10 +24,10 @@ class Slime extends Enemy {
     this.frameFastInterval = 15;
 
     this.isMoving = false;
+    this.lastDeadFrameIndex = 4;
   }
 
   draw(context) {
-    context.save();
     context.drawImage(
       this.image,
       this.frameX * this.spriteWidth,
@@ -38,7 +39,6 @@ class Slime extends Enemy {
       this.width,
       this.height
     );
-    context.restore();
 
     this.drawHealthBar(context);
 
@@ -72,7 +72,7 @@ class Slime extends Enemy {
   }
 
   updateFrameLoop(deltaTime) {
-    const angle = (Math.atan2(this.targetDy, this.targetDx) * 180) / Math.PI;
+    const radian = Math.atan2(this.targetDy, this.targetDx);
 
     const frameInterval =
       this.speedModifier === this.runSpeed
@@ -82,10 +82,24 @@ class Slime extends Enemy {
     if (this.frameTimer > frameInterval) {
       this.spriteX = this.collisionX - this.width * 0.5;
       this.spriteY = this.collisionY - this.height * 0.5 - 15;
-      this.image = this.normalImage;
 
-      if (angle < 90 && angle > 90) {
-        this.image = this.flipped;
+      if (
+        (radian < -1.57 && radian - 3.14) ||
+        (radian > 1.57 && radian < 3.14)
+      ) {
+        this.image = this.flippedImage;
+
+        this.frameX--;
+        if ((this.frameX < 3 && !this.isMoving) || this.frameX < 1) {
+          this.frameX = 6;
+        }
+      } else {
+        this.image = this.normalImage;
+
+        this.frameX++;
+        if ((this.frameX > 3 && !this.isMoving) || this.frameX > 5) {
+          this.frameX = 0;
+        }
       }
 
       if (this.isMoving) {
@@ -94,15 +108,10 @@ class Slime extends Enemy {
         this.frameY = 0;
       }
 
-      this.frameX++;
-      if ((this.frameX > 3 && !this.isMoving) || this.frameX > 5) {
-        this.frameX = 0;
-      }
-
       this.frameTimer = 0;
+    } else {
+      this.frameTimer += deltaTime;
     }
-
-    this.frameTimer += deltaTime;
   }
 }
 

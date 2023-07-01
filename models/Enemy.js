@@ -1,4 +1,5 @@
 import { attackTarget, attacker, hasHealth } from "../combat/combat.js";
+import { deadAnimator } from "./Common.js";
 import PhysicalObject from "./PhysicalObject.js";
 import Stats from "./Stats.js";
 
@@ -8,7 +9,10 @@ const generalUpdate = {
       this.isDead = true;
     }
 
-    if (this.isDead) return;
+    if (this.isDead) {
+      this.playDeadAnimation(deltaTime);
+      return;
+    }
 
     this.checkCollisionsToObjects();
 
@@ -111,6 +115,13 @@ class Enemy extends PhysicalObject {
     this.isMoving = false;
     this.targetDx;
     this.targetDy;
+
+    this.deadInterval = 100;
+    this.deadTime = 0;
+    this.deadAnimationEnded = false;
+    this.deadAnimationStarted = false;
+    this.lastDeadFrameIndex = 4;
+    this.deadFrameRow = 4;
   }
 
   draw(context) {
@@ -233,6 +244,7 @@ class Enemy extends PhysicalObject {
   }
 }
 
+Object.assign(Enemy.prototype, deadAnimator);
 Object.assign(Enemy.prototype, guardBehavior);
 Object.assign(Enemy.prototype, suspicionBehavior);
 Object.assign(Enemy.prototype, generalUpdate);

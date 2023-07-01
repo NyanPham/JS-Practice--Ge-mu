@@ -2,7 +2,7 @@ import Resource from "./Resource.js";
 
 class GrassTurf extends Resource {
   constructor(game) {
-    super(game, null, null, 20, "resource", 1, "grass", ["barehand"]);
+    super(game, null, null, 20, "resource", 1, "fiber", ["barehand"]);
 
     this.refillTime = 5 * 60 * 1000;
 
