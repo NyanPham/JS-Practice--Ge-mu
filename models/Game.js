@@ -27,10 +27,11 @@ class Game {
     this.obstacles = [];
     this.nonObstacles = [];
 
-    this.numOfEnemies = 35;
+    this.numOfEnemies = 0;
     this.enemies = [];
 
     this.objectToPlace = null;
+    this.debug = true;
 
     this.canvas.addEventListener("mousedown", (e) => {
       if (e.button === 0) {
@@ -62,6 +63,8 @@ class Game {
       "contextmenu",
       this.handleRightClick.bind(this)
     );
+
+    document.addEventListener("keydown", this.handleKeyDown.bind(this));
   }
 
   updateObjectsToRender() {
@@ -71,6 +74,8 @@ class Game {
       ...this.nonObstacles,
       ...this.enemies,
     ];
+
+    this.objectsToRender.sort((a, b) => a.collisionY - b.collisionY);
   }
 
   handleActionClick(e) {
@@ -141,13 +146,21 @@ class Game {
     }
   }
 
+  handleKeyDown(e) {
+    if (e.ctrlKey && e.key.toLowerCase() === "d") {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("here");
+      this.debug = !this.debug;
+    }
+  }
+
   init() {
     this.environmentManager.generate("trees");
     this.environmentManager.generate("rocks");
     this.environmentManager.generate("berry");
     this.environmentManager.generate("grass");
 
-    console.log(this.environmentManager.grassTurfs);
     let enemyAttempts = 0;
 
     while (this.enemies.length < this.numOfEnemies && enemyAttempts < 300) {
@@ -156,7 +169,7 @@ class Game {
           this,
           Math.random() * this.width,
           Math.random() * this.height,
-          Math.random() * (35 - 25) + 25
+          Math.random() * (50 - 25) + 25
         )
       );
 
@@ -170,8 +183,10 @@ class Game {
     if (this.fpsTimer > this.fpsInterval) {
       context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+      this.objectsToRender.sort((a, b) => a.collisionY - b.collisionY);
+
       this.objectsToRender.forEach((obj) => {
-        obj.draw(context);
+        obj.draw(context, deltaTime);
         obj.update(deltaTime);
       });
 
