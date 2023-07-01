@@ -5,7 +5,7 @@ import EnvironmentManager from "./EnvironmentManager.js";
 import DayCycleManager from "./DayCycleManager.js";
 import PlayerObject from "./Resources/PlayerObject.js";
 import PhysicalObject from "./PhysicalObject.js";
-import Enemy from "./Enemy.js";
+import Slime from "./Slime.js";
 
 class Game {
   constructor(canvas) {
@@ -27,12 +27,12 @@ class Game {
     this.obstacles = [];
     this.nonObstacles = [];
 
-    this.numOfEnemies = 0;
+    this.numOfEnemies = 25;
     this.enemies = [];
 
     this.objectToPlace = null;
-    this.debug = true;
-
+    this.debug = false;
+    
     this.canvas.addEventListener("mousedown", (e) => {
       if (e.button === 0) {
         this.mouse.togglePressed(true);
@@ -165,11 +165,11 @@ class Game {
 
     while (this.enemies.length < this.numOfEnemies && enemyAttempts < 300) {
       this.enemies.push(
-        new Enemy(
+        new Slime(
           this,
           Math.random() * this.width,
           Math.random() * this.height,
-          Math.random() * (50 - 25) + 25
+          30
         )
       );
 

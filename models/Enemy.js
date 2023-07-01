@@ -12,6 +12,13 @@ const generalUpdate = {
 
     this.checkCollisionsToObjects();
 
+    if (
+      this.updateFrameLoop != null &&
+      typeof this.updateFrameLoop === "function"
+    ) {
+      this.updateFrameLoop(deltaTime);
+    }
+
     if (this.moveToPlayer(deltaTime)) return;
     if (this.suspicion(deltaTime)) return;
     this.guard();
@@ -34,6 +41,9 @@ const suspicionBehavior = {
 
     if (this.lastSeenPlayer < this.waitForSuspicion) {
       this.lastSeenPlayer += deltaTime;
+      this.isMoving = false;
+      this.targetDx = 0;
+      this.targetDy = 0;
       return true;
     }
 
@@ -56,6 +66,10 @@ const guardBehavior = {
       this.moveTo(distance, dx, dy);
       return true;
     }
+
+    this.isMoving = false;
+    this.targetDx = 0;
+    this.targetDy = 0;
 
     return false;
   },
@@ -93,6 +107,10 @@ class Enemy extends PhysicalObject {
 
     this.stats = new Stats(this);
     this.isDead = false;
+
+    this.isMoving = false;
+    this.targetDx;
+    this.targetDy;
   }
 
   draw(context) {
@@ -158,6 +176,10 @@ class Enemy extends PhysicalObject {
 
     this.collisionX += this.speedX * this.speedModifier;
     this.collisionY += this.speedY * this.speedModifier;
+
+    this.isMoving = true;
+    this.targetDx = dx;
+    this.targetDy = dy;
   }
 
   moveToPlayer(deltaTime) {
@@ -171,6 +193,7 @@ class Enemy extends PhysicalObject {
       this.attackRange + this.collisionRadius + this.game.player.collisionRadius
     ) {
       this.attack(this.game.player, deltaTime);
+
       return true;
     }
     if (
