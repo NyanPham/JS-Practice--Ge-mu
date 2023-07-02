@@ -196,8 +196,9 @@ class Inventory {
     this.inventoryContext.fill();
     this.inventoryContext.restore();
   }
-
+  
   updateCanvasView() {
+    console.log(this.inventorySlots);
     this.inventorySlots.forEach((item, index) => {
       if (item === this.emptyConst) return;
 
@@ -460,6 +461,42 @@ class Inventory {
   }
 
   draw(context) {}
+
+  loadData(data) {
+    this.inventorySlots = Array.from({ length: this.slotsNum }).map(
+      () => this.emptyConst
+    );
+
+    data.inventorySlots.forEach((item, index) => {
+      if (item === this.emptyConst) return;
+
+      let slot;
+
+      if (item.type === "tool") {
+        slot = new Tool(item.name, item.type, item.durability);
+      } else if (item.type === "placeable") {
+        slot = new Placeable(
+          item.name,
+          item.type,
+          item.quantity,
+          item.placeImage,
+          item.collisionRadius
+        );
+      } else {
+        slot = new InventoryItem(item.name, item.type, item.quantity);
+      }
+
+      this.inventorySlots[index] = slot;
+    });
+    this.equippedSlotIndex = data.equippedSlotIndex;
+
+    if (this.equippedSlotIndex != null) {
+      const selectedItem = this.inventorySlots[this.equippedSlotIndex];
+      this.player.equip(selectedItem);
+    }
+
+    this.updateCanvasView();
+  }
 }
 
 export default Inventory;

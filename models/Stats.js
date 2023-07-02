@@ -156,6 +156,28 @@ class Stats {
   substractStat(statName, decrement) {
     this[statName] = Math.max(0, this[statName] - decrement);
   }
+
+  loadData(data) {
+    this.maxHealth = data.maxHealth;
+    this.maxHunger = data.maxHunger;
+    this.maxSanity = data.maxSanity;
+
+    this.health = data.health;
+    this.hunger = data.hunger;
+    this.sanity = data.sanity;
+
+    this.constantHungerRate = data.constantHungerRate;
+    this.hungerReduceInterval = data.hungerReduceInterval;
+    this.hungerTimer = data.hungerTimer;
+
+    this.healthRate = data.healthRate;
+    this.healthReduceInterval = data.healthReduceInterval;
+    this.healthTimer = data.healthTimer;
+
+    this.sanityRate = data.sanityRate;
+    this.sanityDropInterval = data.sanityDropInterval;
+    this.sanityTimer = data.sanityTimer;
+  }
 }
 
 export default Stats;

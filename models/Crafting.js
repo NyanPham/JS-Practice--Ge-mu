@@ -1,5 +1,4 @@
 import { createElement } from "../helper/domUtils.js";
-import PhysicalObject from "./PhysicalObject.js";
 
 export const CRAFTING_MAP = {
   axe: {

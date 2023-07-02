@@ -33,6 +33,8 @@ class BerryBush extends ResourceObstacle {
   }
 
   draw(context) {
+    if (this.resevoir == 0) {
+    }
     context.drawImage(
       this.image,
       this.frameX * this.spriteWidth,

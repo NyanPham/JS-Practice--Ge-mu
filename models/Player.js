@@ -28,9 +28,7 @@ class Player extends PhysicalObject {
 
     this.nearLightSource = false;
 
-    this.rageRange = 300;
-    this.attackRange = 30;
-    this.damage = 20;
+    this.damage = 30;
     this.attackInterval = 1000;
     this.attackTimer = 0;
 
@@ -46,7 +44,6 @@ class Player extends PhysicalObject {
     this.spriteY = this.collisionY - this.height * 0.5 - 50;
     this.frameX = 0;
     this.frameY = 0;
-    this.frameYSwap = false;
 
     this.frameTimer = 0;
     this.frameInterval = 75;
@@ -328,6 +325,30 @@ class Player extends PhysicalObject {
     });
 
     this.nearLightSource = hasLightSource;
+  }
+
+  loadData(data) {
+    this.collisionX = data.collisionX;
+    this.collisionY = data.collisionY;
+    this.collisionRadius = data.collisionRadius;
+    this.spriteX = data.spriteX;
+    this.spriteY = data.spriteY;
+    this.frameX = data.frameX;
+    this.frameY = data.frameY;
+    this.deadTime = data.dedTime;
+    this.deadAnimationEnded = data.deadAnimationEnded;
+    this.deadAnimationStarted = data.deadAnimationStarted;
+
+    this.isMoving = false;
+    this.canMove = true;
+    this.rightHand = data.rightHand;
+    this.stats.loadData(data.stats);
+    this.isDead = data.isDead;
+    this.isPlacingObject = false;
+    this.nearLightSource = data.nearLightSource;
+    this.damage = data.damage;
+    this.attackInterval = data.attackInterval;
+    this.attackTimer = data.attackTimer;
   }
 }
 

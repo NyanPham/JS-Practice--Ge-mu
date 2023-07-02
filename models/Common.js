@@ -1,6 +1,5 @@
 export const deadAnimator = {
   playDeadAnimation(deltaTime) {
-    console.log(this.lastDeadFrameIndex);
     if (this.deadAnimationEnded) return;
 
     if (!this.deadAnimationStarted) {

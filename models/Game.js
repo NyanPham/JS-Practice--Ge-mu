@@ -10,8 +10,9 @@ import { getStorage, saveStorage } from "../helper/useStorage.js";
 
 const PLAYER_STORAGE_KEY = "nhan-player-storage-key";
 const ENV_STORAGE_KEY = "nhan-environment-storage-key";
+const ENEMIES_KEY = "nhan-enemies-storage-key";
 const DAY_STORAGE_KEY = "nhan-day-storage-key";
-  
+
 class Game {
   constructor(canvas) {
     this.canvas = canvas;
@@ -236,17 +237,53 @@ class Game {
   }
 
   save() {
-    const playerToCopy = { ...this.player };
-    playerToCopy.game = null;
+    const playerCopied = Object.assign({}, this.player);
+    const environmentCopied = Object.assign({}, this.environmentManager);
+    const dayCycleCopied = Object.assign({}, this.dayCycleManager);
+    const enemiesCopied = this.enemies.slice(0);
 
-    saveStorage(PLAYER_STORAGE_KEY, { ...playerToCopy, game: null });
-    // saveStorage(ENV_STORAGE_KEY, this.environmentManager);
+    this.camera = new Camera(this);
+
+    saveStorage(PLAYER_STORAGE_KEY, JSON.decycle(playerCopied));
+    saveStorage(ENV_STORAGE_KEY, JSON.decycle(environmentCopied));
+    saveStorage(ENEMIES_KEY, JSON.decycle(enemiesCopied));
     // saveStorage(DAY_STORAGE_KEY, this.dayCycleManager);
   }
 
   load() {
-    const player = getStorage(PLAYER_STORAGE_KEY);
-    console.log(player);
+    const player = JSON.retrocycle(getStorage(PLAYER_STORAGE_KEY));
+    const environment = JSON.retrocycle(getStorage(ENV_STORAGE_KEY));
+    const enemies = JSON.retrocycle(getStorage(ENEMIES_KEY));
+
+    if (player) {
+      this.player.loadData(player);
+      this.player.cancelPlacingItem();
+      this.player.inventory.loadData(player.inventory);
+      this.mouse.setPosition(player.collisionX, player.collisionY);
+    }
+
+    if (environment) {
+      this.obstacles = [];
+      this.nonObstacles = [];
+
+      this.environmentManager.loadData(environment);
+    }
+
+    if (enemies) {
+      this.enemies = [];
+
+      let instance;
+      enemies.forEach((savedEnemy) => {
+        if (savedEnemy.name.toLowerCase() === "slime") {
+          instance = new Slime(this);
+          instance.loadData(savedEnemy);
+
+          this.enemies.push(instance);
+        }
+      });
+    }
+
+    this.updateObjectsToRender();
   }
 }
 

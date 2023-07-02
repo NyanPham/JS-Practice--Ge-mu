@@ -1,5 +1,5 @@
 import Obstacle from "../Obstacle.js";
-import { resourceActions } from "./ResourceProperties.js";
+import { resourceActions, savedResourceLoader } from "./ResourceProperties.js";
 
 export const ITEM_VALUE_MAP = new Map([
   ["berry", { health: 1, hunger: 7, sanity: 0 }],
@@ -33,6 +33,7 @@ class ResourceObstacle extends Obstacle {
   }
 }
 
+Object.assign(ResourceObstacle.prototype, savedResourceLoader);
 Object.assign(ResourceObstacle.prototype, resourceActions);
 
 export default ResourceObstacle;

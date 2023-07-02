@@ -1,4 +1,4 @@
-import { resourceActions } from "./ResourceProperties.js";
+import { resourceActions, savedResourceLoader } from "./ResourceProperties.js";
 
 class Resource {
   constructor(
@@ -33,5 +33,6 @@ class Resource {
   update() {}
 }
 
+Object.assign(Resource.prototype, savedResourceLoader);
 Object.assign(Resource.prototype, resourceActions);
 export default Resource;

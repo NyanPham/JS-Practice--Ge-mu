@@ -1,7 +1,7 @@
 import ResourceObstacle from "./ResourceObstacle.js";
 
 class Tree extends ResourceObstacle {
-  constructor(game, seeded) {
+  constructor(game, seeded = false) {
     super(game);
     this.name = "tree";
     this.resourceName = "wood";

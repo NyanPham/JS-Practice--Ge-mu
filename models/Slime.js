@@ -5,6 +5,7 @@ class Slime extends Enemy {
   constructor(game, x, y, radius) {
     super(game, x, y, radius);
 
+    this.name = "slime";
     this.normalImage = document.getElementById("slime-image");
     this.flippedImage = document.getElementById("slime-flipped-image");
 
@@ -112,6 +113,31 @@ class Slime extends Enemy {
     } else {
       this.frameTimer += deltaTime;
     }
+  }
+  
+  loadData(data) {
+    this.collisionX = data.collisionX;
+    this.collisionY = data.collisionY;
+    this.collisionRadius = data.collisionRadius;
+    this.spriteX = data.spriteX;
+    this.spriteY = data.spriteY;
+    this.frameX = data.frameX;
+    this.frameY = data.frameY;
+    this.frameYSwap = data.frameYSwap;
+    this.isMoving = data.isMoving;
+
+    this.firstPositionX = data.firstPositionX;
+    this.firstPositionY = data.firstPositionY;
+    this.lastPositionX = data.lastPositionX;
+    this.lastPositionY = data.lastPositionY;
+    this.targetDx = data.targetDx;
+    this.targetDy = data.targetDy;
+    this.isDead = data.isDead;
+    this.deadTime = data.deadTime;
+    this.deadAnimationEnded = data.deadAnimationEnded;
+    this.deadAnimationStarted = data.deadAnimationStarted;
+
+    this.stats.loadData(data.stats);
   }
 }
 

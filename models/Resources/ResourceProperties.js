@@ -1,4 +1,12 @@
 export const resourceActions = {
+  checkNeedRefill() {
+    if (this.refillInterval !== null) {
+      clearInterval(this.refillInterval);
+    }
+
+    this.refillInterval = setInterval(this.refill.bind(this), this.refillTime);
+  },
+
   getCollected(rightHand, equippedTool = null) {
     if (!this.requiredEquipments.includes(rightHand)) {
       alert(
@@ -24,12 +32,7 @@ export const resourceActions = {
       quantity < this.resevoir ? quantity : this.resevoir;
 
     this.resevoir -= validQuantityToExploit;
-
-    if (this.refillInterval !== null) {
-      clearInterval(this.refillInterval);
-    }
-
-    this.refillInterval = setInterval(this.refill.bind(this), this.refillTime);
+    this.checkNeedRefill();
 
     if (equippedTool != null) equippedTool.reduceDurability(1);
 
@@ -70,4 +73,24 @@ export const resourceProperties = (
     requiredEquipments,
     exploitRateMap: {},
   };
+};
+
+export const savedResourceLoader = {
+  loadData(data) {
+    this.collisionX = data.collisionX;
+    this.collisionY = data.collisionY;
+    this.collisionRadius = data.collisionRadius;
+    this.spriteX = data.spriteX;
+    this.spriteY = data.spriteY;
+    this.frameX = data.frameX;
+    this.frameY = data.frameY;
+
+    this.resevoir = data.resevoir;
+    this.maxContainer = data.maxContainer;
+    this.refillTime = data.refillTime;
+
+    if (this.berryPositions != null && data.berryPositions != null) {
+      this.berryPositions = data.berryPositions;
+    }
+  },
 };

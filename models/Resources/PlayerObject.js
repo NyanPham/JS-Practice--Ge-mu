@@ -26,6 +26,7 @@ class PlayerObject extends Obstacle {
     this.drawFunc = draw;
     this.updateFunc = update;
     this.onRemoval = onRemoval;
+
     customProperties.bind(this)();
   }
 
