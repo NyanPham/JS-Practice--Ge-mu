@@ -16,6 +16,7 @@ class BerryBush extends ResourceObstacle {
     this.exploitRateMap = {
       barehand: 1,
     };
+    this.refillTime = (7 * 60 * 1000) / 2;
 
     this.image = document.getElementById("bush-image");
     this.spriteWidth = 50;

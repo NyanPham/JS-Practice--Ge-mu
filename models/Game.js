@@ -247,13 +247,14 @@ class Game {
     saveStorage(PLAYER_STORAGE_KEY, JSON.decycle(playerCopied));
     saveStorage(ENV_STORAGE_KEY, JSON.decycle(environmentCopied));
     saveStorage(ENEMIES_KEY, JSON.decycle(enemiesCopied));
-    // saveStorage(DAY_STORAGE_KEY, this.dayCycleManager);
+    saveStorage(DAY_STORAGE_KEY, this.dayCycleManager);
   }
 
   load() {
     const player = JSON.retrocycle(getStorage(PLAYER_STORAGE_KEY));
     const environment = JSON.retrocycle(getStorage(ENV_STORAGE_KEY));
     const enemies = JSON.retrocycle(getStorage(ENEMIES_KEY));
+    const dayCycle = JSON.retrocycle(getStorage(DAY_STORAGE_KEY));
 
     if (player) {
       this.player.loadData(player);
@@ -281,6 +282,10 @@ class Game {
           this.enemies.push(instance);
         }
       });
+    }
+
+    if (dayCycle) {
+      this.dayCycleManager.loadData(dayCycle);
     }
 
     this.updateObjectsToRender();

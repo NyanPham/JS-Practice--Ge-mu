@@ -196,9 +196,8 @@ class Inventory {
     this.inventoryContext.fill();
     this.inventoryContext.restore();
   }
-  
+
   updateCanvasView() {
-    console.log(this.inventorySlots);
     this.inventorySlots.forEach((item, index) => {
       if (item === this.emptyConst) return;
 
