@@ -6,23 +6,28 @@ import DayCycleManager from "./DayCycleManager.js";
 import PlayerObject from "./Resources/PlayerObject.js";
 import PhysicalObject from "./PhysicalObject.js";
 import Slime from "./Slime.js";
+import { getStorage, saveStorage } from "../helper/useStorage.js";
 
+const PLAYER_STORAGE_KEY = "nhan-player-storage-key";
+const ENV_STORAGE_KEY = "nhan-environment-storage-key";
+const DAY_STORAGE_KEY = "nhan-day-storage-key";
+  
 class Game {
   constructor(canvas) {
     this.canvas = canvas;
     this.height = canvas.height;
     this.width = canvas.width;
     this.mouse = new Mouse(this.width * 0.5, this.height * 0.5);
-    this.camera = new Camera(this);
-    this.environmentManager = new EnvironmentManager(this);
 
+    this.environmentManager = new EnvironmentManager(this);
     this.dayCycleManager = new DayCycleManager();
+    this.player = new Player(this);
+    this.camera = new Camera(this);
 
     this.fps = 60;
     this.fpsInterval = 1000 / this.fps;
     this.fpsTimer = 0;
 
-    this.player = new Player(this);
     this.objectsToRender = [this.player];
     this.obstacles = [];
     this.nonObstacles = [];
@@ -150,8 +155,21 @@ class Game {
     if (e.ctrlKey && e.key.toLowerCase() === "d") {
       e.preventDefault();
       e.stopPropagation();
-      console.log("here");
       this.debug = !this.debug;
+    }
+
+    if (e.ctrlKey && e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      e.stopPropagation();
+
+      this.save();
+    }
+
+    if (e.ctrlKey && e.key.toLowerCase() === "l") {
+      e.preventDefault();
+      e.stopPropagation();
+
+      this.load();
     }
   }
 
@@ -215,6 +233,20 @@ class Game {
     }
 
     this.fpsTimer += deltaTime;
+  }
+
+  save() {
+    const playerToCopy = { ...this.player };
+    playerToCopy.game = null;
+
+    saveStorage(PLAYER_STORAGE_KEY, { ...playerToCopy, game: null });
+    // saveStorage(ENV_STORAGE_KEY, this.environmentManager);
+    // saveStorage(DAY_STORAGE_KEY, this.dayCycleManager);
+  }
+
+  load() {
+    const player = getStorage(PLAYER_STORAGE_KEY);
+    console.log(player);
   }
 }
 
