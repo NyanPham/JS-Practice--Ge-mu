@@ -37,6 +37,12 @@ class PlayerObject extends Obstacle {
   update(deltaTime) {
     this.updateFunc(deltaTime);
 
+    this.decreaseDurability();
+  }
+
+  decreaseDurability() {
+    if (this.durability == null || !this.constantDropDurability) return;
+
     if (this.constantDropDurability) {
       this.durability -= deltaTime;
     }
@@ -48,8 +54,6 @@ class PlayerObject extends Obstacle {
       document.dispatchEvent(new CustomEvent("object-removal"));
     }
   }
-
-  drawFirecamp(context) {}
 }
 
 export default PlayerObject;

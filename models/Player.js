@@ -241,7 +241,7 @@ class Player extends PhysicalObject {
     }
 
     this.checkCollisionsToObjects();
-    this.checkLightSource();
+    this.checkNearUserObjects();
 
     this.game.dayCycleManager.setDarkness(
       this.nearLightSource ? "rgba(0, 0, 0, 0.1)" : null
@@ -338,21 +338,39 @@ class Player extends PhysicalObject {
     });
   }
 
-  checkLightSource() {
+  checkNearUserObjects() {
     let hasLightSource = false;
+    let nearWorkbench = false;
 
     this.game.environmentManager.userObjects.forEach((userObject) => {
-      if (userObject.name.toLowerCase() === "firecamp") {
-        if (
-          PhysicalObject.getDistance(this, userObject).distance <
-          userObject.lightRadius
-        ) {
-          hasLightSource = true;
-        }
+      if (this.checkLightSource(userObject)) {
+        hasLightSource = true;
+      }
+
+      if (this.checkNearWorkbench(userObject)) {
+        nearWorkbench = true;
       }
     });
 
     this.nearLightSource = hasLightSource;
+    this.crafting.isNearWorkbench = nearWorkbench;
+  }
+
+  checkLightSource(userObject) {
+    if (userObject.name.toLowerCase() !== "firecamp") return false;
+
+    return (
+      PhysicalObject.getDistance(this, userObject).distance <
+      userObject.lightRadius
+    );
+  }
+
+  checkNearWorkbench(userObject) {
+    if (userObject.name.toLowerCase() !== "workbench") return false;
+    return (
+      PhysicalObject.getDistance(this, userObject).distance <
+      this.collisionRadius + userObject.collisionRadius + 20
+    );
   }
 
   loadData(data) {

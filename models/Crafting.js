@@ -12,9 +12,30 @@ export const CRAFTING_MAP = {
     type: ITEM_USE_TYPE.placeable,
     durability: null,
     materials: {
-      wood: 50,
-      rock: 50,
+      wood: 5,
     },
+    placeImage: "campfire.png",
+    collisionRadius: 25,
+    constantDropDurability: false,
+    customProperties: function () {},
+    draw: function (context) {
+      context.beginPath();
+      context.arc(
+        this.collisionX,
+        this.collisionY,
+        this.collisionRadius,
+        0,
+        Math.PI * 2
+      );
+      context.save();
+      context.globalAlpha = 0.5;
+      context.fillStyle = "brown";
+      context.fill();
+      context.restore();
+      context.stroke();
+    },
+    update: function (deltaTime) {},
+    onRemoval: function () {},
   },
   axe: {
     name: "axe",
@@ -88,6 +109,50 @@ export const CRAFTING_MAP = {
   },
 };
 
+export const WORKBENCH_CRAFTING_MAP = {
+  shovel: {
+    name: "shovel",
+    type: ITEM_USE_TYPE.tool,
+    durability: 25,
+    materials: {
+      wood: 10,
+      rock: 5,
+    },
+  },
+  tent: {
+    name: "tent",
+    type: ITEM_USE_TYPE.placeable,
+    durability: 7,
+    materials: {
+      fiber: 30,
+      wood: 30,
+      rock: 35,
+    },
+    placeImage: "campfire.png",
+    collisionRadius: 50,
+    constantDropDurability: false,
+    customProperties: function () {},
+    draw: function (context) {
+      context.beginPath();
+      context.arc(
+        this.collisionX,
+        this.collisionY,
+        this.collisionRadius,
+        0,
+        Math.PI * 2
+      );
+      context.save();
+      context.globalAlpha = 0.5;
+      context.fillStyle = "gray";
+      context.fill();
+      context.restore();
+      context.stroke();
+    },
+    update: function (deltaTime) {},
+    onRemoval: function () {},
+  },
+};
+
 class Crafting {
   constructor(game, player) {
     this.game = game;
@@ -118,6 +183,8 @@ class Crafting {
 
     this.spriteX = this.imageSpacing;
     this.spriteY = this.imageSpacing;
+
+    this.isNearWorkbench = false;
 
     // crafting list
     this.init();
@@ -159,6 +226,15 @@ class Crafting {
   }
 
   handleOpenCraftingTable() {
+    this.craftingItemsMap = CRAFTING_MAP;
+
+    if (this.isNearWorkbench) {
+      this.craftingItemsMap = {
+        ...this.craftingItemsMap,
+        ...WORKBENCH_CRAFTING_MAP,
+      };
+    }
+
     const craftableItems = Object.entries(this.craftingItemsMap).reduce(
       (craftable, itemMap) => {
         const enoughMaterial = Object.entries(itemMap[1].materials).every(

@@ -233,6 +233,7 @@ class Game {
           if (isPlaced) {
             this.player.placeItem();
             this.mouse.disableMouseCursor();
+            this.objectToPlace = null;
           }
         }
       }
