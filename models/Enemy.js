@@ -15,7 +15,6 @@ const generalUpdate = {
     }
 
     this.checkCollisionsToObjects();
-
     if (
       this.updateFrameLoop != null &&
       typeof this.updateFrameLoop === "function"
@@ -24,6 +23,8 @@ const generalUpdate = {
     }
 
     if (this.moveToPlayer(deltaTime)) return;
+    if (this.attack(this.attackTarget, deltaTime)) return;
+
     if (this.suspicion(deltaTime)) return;
     this.guard();
   },
@@ -78,7 +79,7 @@ const guardBehavior = {
     return false;
   },
 };
-
+  
 class Enemy extends PhysicalObject {
   constructor(game, x, y, radius) {
     super(game, x, y, radius);
@@ -86,7 +87,7 @@ class Enemy extends PhysicalObject {
     this.rageRange = 300;
     this.attackRange = 30;
     this.damage = 15;
-    this.attackInterval = 1000;
+    this.attackInterval = 150;
     this.attackTimer = 0;
 
     this.speedX = 0;
@@ -122,6 +123,9 @@ class Enemy extends PhysicalObject {
     this.deadAnimationStarted = false;
     this.lastDeadFrameIndex = 4;
     this.deadFrameRow = 4;
+
+    this.isAttacking = false;
+    this.attackTarget = null;
   }
 
   draw(context) {
@@ -193,19 +197,29 @@ class Enemy extends PhysicalObject {
     this.targetDy = dy;
   }
 
-  moveToPlayer(deltaTime) {
+  moveToPlayer() {
     const { dx, dy, distance } = PhysicalObject.getDistance(
       this,
       this.game.player
     );
 
     if (
+      this.isAttacking &&
+      distance >
+        this.attackRange +
+          this.collisionRadius +
+          this.game.player.collisionRadius
+    ) {
+      this.cancelAttackAction();
+    }
+
+    if (
       distance <=
       this.attackRange + this.collisionRadius + this.game.player.collisionRadius
     ) {
-      this.attack(this.game.player, deltaTime);
+      if (!this.isAttacking) this.startAttackAction(this.game.player);
 
-      return true;
+      return false;
     }
     if (
       distance <

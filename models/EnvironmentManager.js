@@ -153,7 +153,7 @@ class EnvironmentManager {
       instance.loadData(rock);
       instance.checkNeedRefill();
 
-      this.trees.push(instance);
+      this.rocks.push(instance);
       this.game.obstacles.push(instance);
     });
 

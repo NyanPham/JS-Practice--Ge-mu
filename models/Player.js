@@ -28,10 +28,16 @@ class Player extends PhysicalObject {
 
     this.nearLightSource = false;
 
+    this.attackRange = 50;
     this.damage = 30;
-    this.attackInterval = 1000;
+    this.attackInterval = 250;
     this.attackTimer = 0;
+    this.attackFrameLastIndex = 3;
+    this.attackFrameFirstIndexFlipped = 5;
+    this.attackFrameLastIndexFlipped = 2;
+    this.attackFrameRow = 7;
 
+    this.horizontalSwap = false;
     this.normalImage = document.getElementById("player-image");
     this.flippedImage = document.getElementById("player-flipped-image");
 
@@ -56,6 +62,8 @@ class Player extends PhysicalObject {
     this.deadFrameRow = 9;
 
     this.isMoving = false;
+    this.isAttacking = false;
+    this.attackTarget = null;
   }
 
   /**
@@ -92,11 +100,16 @@ class Player extends PhysicalObject {
   }
 
   consume(item) {
-    const { health, hunger, sanity } = ITEM_VALUE_MAP.get(item.name);
+    console.log(item.name);
+    const { health, hunger, sanity, effect } = ITEM_VALUE_MAP.get(item.name);
 
     this.stats.addStat("hunger", hunger);
     this.stats.addStat("health", health);
     this.stats.addStat("sanity", sanity);
+
+    if (effect != null && typeof effect === "function") {
+      effect(this.game);
+    }
   }
 
   getItemInfoAfterCrafting(itemName) {
@@ -207,15 +220,26 @@ class Player extends PhysicalObject {
       !this.nearLightSource && this.game.dayCycleManager.isNight
     );
 
-    if (this.isDead) this.playDeadAnimation(deltaTime);
-    if (!this.canMove || this.isDead) return;
+    if (this.isDead) {
+      this.playDeadAnimation(deltaTime);
+      return;
+    }
 
     if (this.getHealth() === 0) {
       this.isDead = true;
     }
 
-    const { distance, dx, dy } = this.moveToMouse();
-    this.updateFrameLoop(deltaTime, dx, dy);
+    if (this.isAttacking) {
+      this.attack(this.attackTarget, deltaTime);
+      return;
+    }
+
+    const { dx, dy } = this.moveToMouse();
+
+    if (dx != null && dy != null) {
+      this.updateFrameLoop(deltaTime, dx, dy);
+    }
+
     this.checkCollisionsToObjects();
     this.checkLightSource();
 
@@ -229,6 +253,7 @@ class Player extends PhysicalObject {
 
     if (this.frameTimer > this.frameInterval) {
       this.image = this.normalImage;
+      this.horizontalSwap = false;
 
       if (
         (radian < -2.36 && radian > -3.14) ||
@@ -236,6 +261,7 @@ class Player extends PhysicalObject {
       ) {
         this.frameY = this.isMoving ? 4 : 1;
         this.image = this.flippedImage;
+        this.horizontalSwap = true;
       } else if (
         (radian > -0.79 && radian < 0) ||
         (radian > 0 && radian < 0.79)
@@ -247,7 +273,7 @@ class Player extends PhysicalObject {
         this.frameY = this.isMoving ? 5 : 2;
       }
 
-      if (this.image === this.normalImage) {
+      if (!this.horizontalSwap) {
         this.frameX++;
         if (this.frameX > 5) this.frameX = 0;
       } else {
@@ -262,6 +288,8 @@ class Player extends PhysicalObject {
   }
 
   moveToMouse() {
+    if (!this.canMove) return { distance: null, dx: null, dy: null };
+
     const { x, y } = this.game.mouse.getPosition();
 
     const { distance, dx, dy } = PhysicalObject.getDistance(this, {

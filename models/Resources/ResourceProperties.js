@@ -79,7 +79,9 @@ export const savedResourceLoader = {
   loadData(data) {
     this.collisionX = data.collisionX;
     this.collisionY = data.collisionY;
-    this.collisionRadius = data.collisionRadius;
+    if (this.collisionRadius == null) {
+      this.collisionRadius = data.collisionRadius;
+    }
     this.spriteX = data.spriteX;
     this.spriteY = data.spriteY;
     this.frameX = data.frameX;

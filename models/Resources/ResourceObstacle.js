@@ -3,6 +3,17 @@ import { resourceActions, savedResourceLoader } from "./ResourceProperties.js";
 
 export const ITEM_VALUE_MAP = new Map([
   ["berry", { health: 1, hunger: 7, sanity: 0 }],
+  [
+    "straw_roll",
+    {
+      health: 3,
+      hunger: -10,
+      sanity: 50,
+      effect: (game) => {
+        game.dayCycleManager.skipDays(1);
+      },
+    },
+  ],
 ]);
 
 class ResourceObstacle extends Obstacle {

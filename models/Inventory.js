@@ -1,3 +1,4 @@
+import { ITEM_USE_TYPE } from "./Crafting.js";
 import InventoryItem from "./InventoryItem.js";
 import Tool from "./Tool.js";
 import Placeable from "./items/Placeable.js";
@@ -124,7 +125,7 @@ class Inventory {
     this.inventoryContext.fill();
     this.inventoryContext.restore();
     this.inventoryContext.stroke();
-    if (this.inventorySlots[index].type === "tool") {
+    if (this.inventorySlots[index].type === ITEM_USE_TYPE.tool) {
       this.drawDurability(index);
     }
   }
@@ -205,7 +206,7 @@ class Inventory {
 
       this.inventoryContext.beginPath();
       this.inventoryContext.fillText(
-        item.name,
+        item.name.split("_"),
         index * this.slotWidth + this.slotWidth * 0.5,
         this.slotHeight * 0.5 - 5
       );
@@ -243,14 +244,14 @@ class Inventory {
 
     if (selectedItem == null) return;
 
-    if (selectedItem.type === "tool") {
+    if (selectedItem.type === ITEM_USE_TYPE.tool) {
       this.equippedSlotIndex = index;
       this.player.equip(selectedItem);
 
       this.updateCanvasView();
     }
 
-    if (selectedItem.type === "placeable") {
+    if (selectedItem.type === ITEM_USE_TYPE.placeable) {
       this.game.mouse.enableMouseCursor(
         selectedItem.placeImage.src,
         selectedItem.collisionRadius
@@ -269,7 +270,7 @@ class Inventory {
     );
     if (selectedItem == null) return;
 
-    if (selectedItem.type === "consumable") {
+    if (selectedItem.type === ITEM_USE_TYPE.consumable) {
       this.player.consume(selectedItem);
       selectedItem.decrement(1);
       if (selectedItem.quantity === 0) {
@@ -277,7 +278,10 @@ class Inventory {
       }
     }
 
-    if (selectedItem.type === "tool" && index === this.equippedSlotIndex) {
+    if (
+      selectedItem.type === ITEM_USE_TYPE.tool &&
+      index === this.equippedSlotIndex
+    ) {
       this.player.removeTool();
     }
 
@@ -336,7 +340,7 @@ class Inventory {
   removeMarkedItems() {
     for (let i = 0; i < this.inventorySlots.length; i++) {
       if (
-        this.inventorySlots[i].type === "tool" &&
+        this.inventorySlots[i].type === ITEM_USE_TYPE.tool &&
         this.inventorySlots[i].markedForDeletion
       ) {
         this.inventorySlots[i] = this.emptyConst;
@@ -367,10 +371,14 @@ class Inventory {
 
     let slot = this.getSlotByItemNameAndType(itemName, itemType);
 
-    if (slot == null || itemType === "tool" || itemType === "placeable") {
-      if (itemType === "tool") {
+    if (
+      slot == null ||
+      itemType === ITEM_USE_TYPE.tool ||
+      itemType === ITEM_USE_TYPE.placeable
+    ) {
+      if (itemType === ITEM_USE_TYPE.tool) {
         slot = new Tool(itemName, itemType, durability);
-      } else if (itemType === "placeable") {
+      } else if (itemType === ITEM_USE_TYPE.placeable) {
         slot = new Placeable(
           itemName,
           itemType,
@@ -470,10 +478,10 @@ class Inventory {
       if (item === this.emptyConst) return;
 
       let slot;
-
-      if (item.type === "tool") {
+    
+      if (item.type === ITEM_USE_TYPE.tool) {
         slot = new Tool(item.name, item.type, item.durability);
-      } else if (item.type === "placeable") {
+      } else if (item.type === ITEM_USE_TYPE.placeable) {
         slot = new Placeable(
           item.name,
           item.type,

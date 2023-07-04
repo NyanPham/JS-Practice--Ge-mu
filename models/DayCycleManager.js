@@ -7,8 +7,8 @@ class DayCycleManager {
       "--darkness"
     );
 
-    this.dayInterval = 0.5 * 60 * 1000;
-    this.nightInterval = 0.5 * 60 * 1000;
+    this.dayInterval = 3.5 * 60 * 1000;
+    this.nightInterval = 1.5 * 60 * 1000;
 
     this.dayNightCycleTimer = 0;
     this.dayCount = 1;
@@ -102,6 +102,12 @@ class DayCycleManager {
     this.dayCount = data.dayCount;
     this.isNight = data.isNight;
     this.currentcolor = data.currentcolor;
+  }
+
+  skipDays(dayNum) {
+    this.dayCount += dayNum;
+    this.isNight = false;
+    this.dayNightCycleTimer = 0;
   }
 }
 

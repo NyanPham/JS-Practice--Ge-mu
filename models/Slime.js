@@ -6,6 +6,8 @@ class Slime extends Enemy {
     super(game, x, y, radius);
 
     this.name = "slime";
+
+    this.horizontalSwap = false;
     this.normalImage = document.getElementById("slime-image");
     this.flippedImage = document.getElementById("slime-flipped-image");
 
@@ -26,6 +28,11 @@ class Slime extends Enemy {
 
     this.isMoving = false;
     this.lastDeadFrameIndex = 4;
+
+    this.attackFrameLastIndex = 2;
+    this.attackFrameFirstIndexFlipped = 6;
+    this.attackFrameLastIndexFlipped = 4;
+    this.attackFrameRow = 3;
   }
 
   draw(context) {
@@ -73,6 +80,8 @@ class Slime extends Enemy {
   }
 
   updateFrameLoop(deltaTime) {
+    if (this.isAttacking) return;
+
     const radian = Math.atan2(this.targetDy, this.targetDx);
 
     const frameInterval =
@@ -89,6 +98,7 @@ class Slime extends Enemy {
         (radian > 1.57 && radian < 3.14)
       ) {
         this.image = this.flippedImage;
+        this.horizontalSwap = true;
 
         this.frameX--;
         if ((this.frameX < 3 && !this.isMoving) || this.frameX < 1) {
@@ -96,6 +106,7 @@ class Slime extends Enemy {
         }
       } else {
         this.image = this.normalImage;
+        this.horizontalSwap = false;
 
         this.frameX++;
         if ((this.frameX > 3 && !this.isMoving) || this.frameX > 5) {
@@ -114,7 +125,7 @@ class Slime extends Enemy {
       this.frameTimer += deltaTime;
     }
   }
-  
+
   loadData(data) {
     this.collisionX = data.collisionX;
     this.collisionY = data.collisionY;

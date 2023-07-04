@@ -100,6 +100,7 @@ class Game {
       this.player.collect(item);
     } else {
       this.player.enableMovement();
+      this.player.cancelAttackAction();
     }
   }
 
@@ -137,9 +138,15 @@ class Game {
       this.player,
       this.player.attackRange
     );
-    if (!collided) return null;
 
-    this.player.attackGlobalTimer(enemy);
+    if (!collided) {
+      this.player.enableMovement();
+      this.player.cancelAttackAction();
+      return null;
+    }
+
+    this.player.disableMovement();
+    this.player.startAttackAction(enemy);
   }
 
   handleRightClick(e) {
@@ -237,9 +244,9 @@ class Game {
   }
 
   save() {
-    const playerCopied = Object.assign({}, this.player);
-    const environmentCopied = Object.assign({}, this.environmentManager);
-    const dayCycleCopied = Object.assign({}, this.dayCycleManager);
+    const playerCopied = { ...this.player };
+    const environmentCopied = { ...this.environmentManager };
+    const dayCycleCopied = { ...this.dayCycleManager };
     const enemiesCopied = this.enemies.slice(0);
 
     this.camera = new Camera(this);
@@ -247,7 +254,7 @@ class Game {
     saveStorage(PLAYER_STORAGE_KEY, JSON.decycle(playerCopied));
     saveStorage(ENV_STORAGE_KEY, JSON.decycle(environmentCopied));
     saveStorage(ENEMIES_KEY, JSON.decycle(enemiesCopied));
-    saveStorage(DAY_STORAGE_KEY, this.dayCycleManager);
+    saveStorage(DAY_STORAGE_KEY, JSON.decycle(dayCycleCopied));
   }
 
   load() {

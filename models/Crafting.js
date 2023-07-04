@@ -1,29 +1,52 @@
 import { createElement } from "../helper/domUtils.js";
 
+export const ITEM_USE_TYPE = {
+  tool: "tool",
+  consumable: "consumable",
+  placeable: "placeable",
+};
+
 export const CRAFTING_MAP = {
+  workbench: {
+    name: "workbench",
+    type: ITEM_USE_TYPE.placeable,
+    durability: null,
+    materials: {
+      wood: 50,
+      rock: 50,
+    },
+  },
   axe: {
-    name: "Axe",
-    type: "tool",
+    name: "axe",
+    type: ITEM_USE_TYPE.tool,
     durability: 10,
     materials: {
       wood: 3,
     },
   },
   pickaxe: {
-    name: "Pickaxe",
-    type: "tool",
+    name: "pickaxe",
+    type: ITEM_USE_TYPE.tool,
     durability: 15,
     materials: {
       wood: 30,
     },
   },
+  straw_roll: {
+    name: "straw_roll",
+    type: ITEM_USE_TYPE.consumable,
+    durability: 1,
+    materials: {
+      fiber: 30,
+    },
+  },
   firecamp: {
-    name: "Firecamp",
-    type: "placeable",
+    name: "firecamp",
+    type: ITEM_USE_TYPE.placeable,
     placeImage: "campfire.png",
     collisionRadius: 35,
     constantDropDurability: true,
-    durability: 2 * 60 * 1000,
+    durability: 1 * 60 * 1000,
     materials: {
       wood: 5,
     },
@@ -120,6 +143,15 @@ class Crafting {
     );
 
     this.craftbleList.addEventListener("click", this.craftItem.bind(this));
+
+    this.craftingListContainer.addEventListener("click", (e) => {
+      if (
+        e.target.matches("[data-craftable-list]") ||
+        e.target.closest("[data-craftable-list]") != null
+      )
+        return;
+      this.craftingListContainer.classList.remove("show");
+    });
 
     this.closeCraftingListBtn.addEventListener("click", () =>
       this.craftingListContainer.classList.remove("show")
